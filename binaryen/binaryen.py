@@ -1,7 +1,7 @@
 import platform
 
 
-from _binaryen_cffi import ffi
+from ._binaryen_cffi import ffi
 
 if platform.system() == "Linux":
     __lib_string = "libbinaryen.so"

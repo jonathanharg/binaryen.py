@@ -17,42 +17,44 @@ myModule.add_function(
     myModule.block(
         None,
         [
-            myModule.return_(
-                myModule.If(
+            myModule.If(
+                myModule.binary(
+                    binaryen.lib.BinaryenLeSInt32(),
+                    myModule.local_get(0, binaryen.i32),
+                    myModule.const(binaryen.lib.BinaryenLiteralInt32(1)),
+                ),
+                myModule.Return(myModule.local_get(0, binaryen.i32)),
+                myModule.Return(
                     myModule.binary(
-                        binaryen.lib.BinaryenLeSInt32(),
-                        myModule.local_get(0, binaryen.i32),
-                        myModule.const(binaryen.lib.BinaryenLiteralInt32(1)),
-                    ),
-                    myModule.return_(myModule.local_get(0, binaryen.i32)),
-                    myModule.return_(
-                        myModule.binary(
-                            binaryen.lib.BinaryenAddInt32(),
-                            binaryen.lib.BinaryenCall(
-                                myModule.ptr,
-                                b"fib",
+                        binaryen.lib.BinaryenAddInt32(),
+                        myModule.call(
+                            b"fib",
+                            [
                                 myModule.binary(
                                     binaryen.lib.BinaryenSubInt32(),
                                     myModule.local_get(0, binaryen.i32),
-                                    myModule.const(binaryen.lib.BinaryenLiteralInt32(1)),
-                                ),
-                                1,
-                                binaryen.i32,
-                            ),
-                            binaryen.lib.BinaryenCall(
-                                myModule.ptr,
-                                b"fib",
+                                    myModule.const(
+                                        binaryen.lib.BinaryenLiteralInt32(1)
+                                    ),
+                                )
+                            ],
+                            binaryen.i32,
+                        ),
+                        myModule.call(
+                            b"fib",
+                            [
                                 myModule.binary(
                                     binaryen.lib.BinaryenSubInt32(),
                                     myModule.local_get(0, binaryen.i32),
-                                    myModule.const(binaryen.lib.BinaryenLiteralInt32(2)),
-                                ),
-                                1,
-                                binaryen.i32,
-                            ),
-                        )
-                    ),
-                )
+                                    myModule.const(
+                                        binaryen.lib.BinaryenLiteralInt32(2)
+                                    ),
+                                )
+                            ],
+                            binaryen.i32,
+                        ),
+                    )
+                ),
             )
         ],
         binaryen.none,
@@ -62,4 +64,12 @@ myModule.add_function(
 if not myModule.validate():
     raise Exception("Invalid module!")
 
+myModule.add_function_export(b"fib", b"fib")
+
 myModule.print()
+
+myModule.optimize()
+myModule.print()
+# myModule.write_binary(__file__)
+
+# Test with: wasmtime fib.wasm --invoke fib 23

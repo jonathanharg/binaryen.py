@@ -20,7 +20,7 @@ myModule.add_function(
                     myModule.local_get(1, binaryen.i32),
                 ),
             ),
-            myModule.return_(myModule.local_get(2, binaryen.i32)),
+            myModule.Return(myModule.local_get(2, binaryen.i32)),
         ],
         binaryen.none,
     ),

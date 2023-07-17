@@ -10,11 +10,14 @@ BinaryenOp: TypeAlias = Any
 BinaryenExpressionId: TypeAlias = Any
 BinaryenExportRef: TypeAlias = Any
 
-T = TypeVar('T')
+T = TypeVar("T")
+
+
 def _none_to_null(possibly_none: T | None) -> _cffi_backend.FFI.CData | T:
     if possibly_none is None:
         return ffi.NULL
     return possibly_none
+
 
 def _change_file_extension(filename: str, extension: str) -> str:
     # TODO: Change this to actual file handling
@@ -92,7 +95,7 @@ class Module:
         if_true: BinaryenExpressionRef,
         if_false: BinaryenExpressionRef,
     ) -> BinaryenExpressionRef:
-        return lib.BinaryenBlock(self.ptr, condition, if_true, if_false)
+        return lib.BinaryenIf(self.ptr, condition, if_true, if_false)
 
     # TODO: Loop, Break, Switch, Call, CallIndirect, ReturnCall, ReturnCallIndirect,
 
@@ -128,34 +131,42 @@ class Module:
         self, op: BinaryenOp, left: BinaryenExpressionRef, right: BinaryenExpressionRef
     ) -> BinaryenExpressionRef:
         return lib.BinaryenUnary(self.ptr, op, left, right)
-    
-    def binary(self, op: BinaryenOp, left: BinaryenExpressionRef, right: BinaryenExpressionRef) -> BinaryenExpressionRef:
+
+    def binary(
+        self, op: BinaryenOp, left: BinaryenExpressionRef, right: BinaryenExpressionRef
+    ) -> BinaryenExpressionRef:
         return lib.BinaryenBinary(self.ptr, op, left, right)
-    
-    def select(self, condition: BinaryenExpressionRef, if_true: BinaryenExpressionRef, if_false: BinaryenExpressionRef, select_type: BinaryenType) -> BinaryenExpressionRef:
+
+    def select(
+        self,
+        condition: BinaryenExpressionRef,
+        if_true: BinaryenExpressionRef,
+        if_false: BinaryenExpressionRef,
+        select_type: BinaryenType,
+    ) -> BinaryenExpressionRef:
         return lib.BinaryenSelect(self.ptr, condition, if_true, if_false, select_type)
-    
-    def drop(self, value:BinaryenExpressionRef) -> BinaryenExpressionRef:
+
+    def drop(self, value: BinaryenExpressionRef) -> BinaryenExpressionRef:
         return lib.BinaryenDrop(self.ptr, value)
-    
+
     # TODO: Come up with a better name for this
-    def return_(self, value: BinaryenExpressionRef | None) -> BinaryenExpressionRef:
+    def Return(self, value: BinaryenExpressionRef | None) -> BinaryenExpressionRef:
         return lib.BinaryenReturn(self.ptr, _none_to_null(value))
-    
+
     # TODO: MemorySize, MemoryGrow
 
     def nop(self) -> BinaryenExpressionRef:
         return lib.BinaryenNop(self.ptr)
-    
+
     def unreachable(self) -> BinaryenExpressionRef:
         return lib.BinaryenUnreachable(self.ptr)
-    
+
     # TODO: AtomicLoad, AtomicStore, AtomicRMW, AtomicCmpxchg, AtomicWait, AtomicNotify, AtomicFence
     # TODO: SIMDExtract, SIMDReplace, SIMDShuffle, SIMDTernary, SIMDShift, SIMDLoad, SIMDLoadStoreLane
     # TODO: MemoryInit, MemoryCopy, MemoryFill,
     # TODO: RefAs, RefFuc, RefEq
     # TODO: TableGet, TableSet, TableGrow
-    # TODO: Try, Throw, Rethrow, 
+    # TODO: Try, Throw, Rethrow,
     # TODO: TupleMake, TupleExtract, Pop, I31New, I31Get
     # TODO: CallRef, ReftTest, RefCast, BrOn
     # TODO: StructNew, StructGet, StructSet
@@ -165,47 +176,57 @@ class Module:
     # TODO This should probably be some sort of inner class
     def expression_get_id(self, expr: BinaryenExpressionRef) -> BinaryenExpressionId:
         return lib.BinaryenExpressionGetId(expr)
-    
+
     def expression_get_type(self, expr: BinaryenExpressionRef) -> BinaryenType:
         return lib.BinaryenExpressionGetType(expr)
 
-    def expression_set_type(self, expr: BinaryenExpressionRef, expr_type: BinaryenType) -> None:
+    def expression_set_type(
+        self, expr: BinaryenExpressionRef, expr_type: BinaryenType
+    ) -> None:
         return lib.BinaryenExpressionSetType(expr, expr_type)
-    
+
     def expression_print(self, expr: BinaryenExpressionRef) -> None:
         return lib.BinaryenExpressionPrint(expr)
-    
+
     def expression_finalize(self, expr: BinaryenExpressionRef) -> None:
         return lib.BinaryenExpressionFinalize(expr)
-    
+
     def expression_copy(self, expr: BinaryenExpressionRef) -> BinaryenExpressionRef:
         return lib.BinaryenExpressionCopy(expr, self.ptr)
-    
+
     def block_get_name(self, expr: BinaryenExpressionRef) -> bytes | None:
         return lib.BinaryenBlockGetName(expr)
-    
+
     def block_set_name(self, expr: BinaryenExpressionRef, name: bytes) -> None:
         return lib.BinaryenBlockSetName(expr, name)
-    
+
     def block_get_num_children(self, expr: BinaryenExpressionRef) -> int:
         return lib.BinaryenBlockGetNumChildren(expr)
-    
-    def block_get_child_at(self, expr: BinaryenExpressionRef, index: int) -> BinaryenExpressionRef:
-        return lib.BinaryenBlockGetChildAt(expr, index)
-    
-    def block_set_child_at(self, expr: BinaryenExpressionRef, index: int, child: BinaryenExpressionRef) -> None:
-        return lib.BinaryenBlockSetChildAt(expr, index, child)
-    
-    def block_append_child(self, expr: BinaryenExpressionRef, child: BinaryenExpressionRef) -> int:
-        return lib.BinaryenBlockAppendChild(expr, child)
-    
-    def block_insert_child_at(self, expr: BinaryenExpressionRef, index: int, child: BinaryenExpressionRef) -> None:
-        return lib.BinaryenBlockInsertChildAt(expr, index, child)
-    
-    def block_remove_child_at(self, expr: BinaryenExpressionRef, index: int) -> BinaryenExpressionRef:
-        return lib.BinaryenBlockRemoveChildAt(expr, index)
-    
 
+    def block_get_child_at(
+        self, expr: BinaryenExpressionRef, index: int
+    ) -> BinaryenExpressionRef:
+        return lib.BinaryenBlockGetChildAt(expr, index)
+
+    def block_set_child_at(
+        self, expr: BinaryenExpressionRef, index: int, child: BinaryenExpressionRef
+    ) -> None:
+        return lib.BinaryenBlockSetChildAt(expr, index, child)
+
+    def block_append_child(
+        self, expr: BinaryenExpressionRef, child: BinaryenExpressionRef
+    ) -> int:
+        return lib.BinaryenBlockAppendChild(expr, child)
+
+    def block_insert_child_at(
+        self, expr: BinaryenExpressionRef, index: int, child: BinaryenExpressionRef
+    ) -> None:
+        return lib.BinaryenBlockInsertChildAt(expr, index, child)
+
+    def block_remove_child_at(
+        self, expr: BinaryenExpressionRef, index: int
+    ) -> BinaryenExpressionRef:
+        return lib.BinaryenBlockRemoveChildAt(expr, index)
 
     def add_function(
         self,
@@ -218,10 +239,20 @@ class Module:
         return lib.BinaryenAddFunction(
             self.ptr, name, params, results, var_types, len(var_types), body
         )
-    
-    def add_function_export(self, internal_name: bytes, external_name: bytes) -> BinaryenExportRef:
+
+    def call(
+        self,
+        target: bytes,
+        operands: list[BinaryenExpressionRef],
+        return_type: BinaryenType,
+    ):
+        return lib.BinaryenCall(self.ptr, target, operands, len(operands), return_type)
+
+    def add_function_export(
+        self, internal_name: bytes, external_name: bytes
+    ) -> BinaryenExportRef:
         return lib.BinaryenAddFunctionExport(self.ptr, internal_name, external_name)
-    
+
     def optimize(self) -> None:
         return lib.BinaryenModuleOptimize(self.ptr)
 
@@ -230,7 +261,7 @@ class Module:
 
     def validate(self) -> bool:
         return lib.BinaryenModuleValidate(self.ptr)
-    
+
     def emit_text(self) -> str:
         text_ptr = lib.BinaryenModuleAllocateAndWriteText(self.ptr)
         text_bytes = ffi.string(text_ptr)
@@ -238,7 +269,7 @@ class Module:
 
         # text_ptr is automatically freed by python garbage collector
         return text
-    
+
     def emit_stack_ir(self, optimize: bool) -> str:
         text_ptr = lib.BinaryenModuleAllocateAndWriteStackIR(self.ptr, optimize)
         text_bytes = ffi.string(text_ptr)
@@ -254,25 +285,25 @@ class Module:
 
         # text_ptr is automatically freed by python garbage collector
         return text
-    
+
     def emit_binary(self) -> bytes:
         struct = lib.BinaryenModuleAllocateAndWrite(self.ptr, ffi.NULL)
 
-        binary_ptr = ffi.cast("char *", struct.binary) # char * pointer to the binary
+        binary_ptr = ffi.cast("char *", struct.binary)  # char * pointer to the binary
         binary_len = struct.binaryBytes
 
-        binary = ffi.unpack(binary_ptr, binary_len) # reads binary buffer into python
+        binary = ffi.unpack(binary_ptr, binary_len)  # reads binary buffer into python
 
         # print([x for x in binary]) # Debug: print int values of memory buffer
         return binary
-    
+
     def write_text(self, filename: str):
         filename_wat = _change_file_extension(filename, "wat")
 
         with open(filename_wat, "x", encoding="utf-8") as file:
             text = self.emit_text()
             file.write(text)
-    
+
     def write_binary(self, filename: str):
         filename_wasm = _change_file_extension(filename, "wasm")
 

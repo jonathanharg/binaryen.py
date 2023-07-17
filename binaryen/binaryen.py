@@ -16,6 +16,14 @@ def _none_to_null(possibly_none: T | None) -> _cffi_backend.FFI.CData | T:
         return ffi.NULL
     return possibly_none
 
+def _change_file_extension(filename: str, extension: str) -> str:
+    if filename.lower().endswith("." + extension):
+        return filename
+    split_filename = filename.split(".")
+    if len(split_filename) > 1:
+        split_filename[-1] = extension
+    return ".".join(split_filename)
+
 
 def type_create(types: list[BinaryenType]) -> BinaryenType:
     return lib.BinaryenTypeCreate(types, len(types))
@@ -221,3 +229,36 @@ class Module:
 
     def validate(self) -> bool:
         return lib.BinaryenModuleValidate(self.ptr)
+    
+    def emit_text(self) -> str:
+        text_ptr = lib.BinaryenModuleAllocateAndWriteText(self.ptr)
+        text_bytes = ffi.string(text_ptr)
+        text = text_bytes.decode("ascii")
+
+        # text_ptr is automatically freed by python garbage collector
+        return text
+    
+    def emit_binary(self) -> bytes:
+        struct = lib.BinaryenModuleAllocateAndWrite(self.ptr, ffi.NULL)
+
+        binary_ptr = ffi.cast("char *", struct.binary) # char * pointer to the binary
+        binary_len = struct.binaryBytes
+
+        binary = ffi.unpack(binary_ptr, binary_len) # reads binary buffer into python
+
+        # print([x for x in binary]) # Debug: print int values of memory buffer
+        return binary
+    
+    def write_text(self, filename: str):
+        filename_wat = _change_file_extension(filename, "wat")
+
+        with open(filename_wat, "x", encoding="utf-8") as file:
+            text = self.emit_text()
+            file.write(text)
+    
+    def write_binary(self, filename: str):
+        filename_wasm = _change_file_extension(filename, "wasm")
+
+        with open(filename_wasm, "xb") as file:
+            binary = self.emit_binary()
+            file.write(binary)

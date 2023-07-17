@@ -4,6 +4,8 @@ from ._binaryen_cffi import ffi
 
 NULL = ffi.NULL
 
+CData: TypeAlias = ffi.CData
+
 # Empty type, under the hood all Binaryen types are integers
 # we don't want users to believe that they can modify types with 
 # traditional integer operations, because they can't.

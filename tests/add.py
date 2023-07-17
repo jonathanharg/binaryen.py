@@ -27,5 +27,14 @@ if not myModule.validate():
     raise Exception("Invalid module!")
 
 myModule.add_function_export(b"add", b"add")
+
+test = myModule.emit_text()
+print(test)
+test2 = myModule.emit_binary()
+print(test2)
+
+myModule.write_text(__file__)
+myModule.write_binary(__file__)
+
 myModule.optimize()
-myModule.print()
+# myModule.print()

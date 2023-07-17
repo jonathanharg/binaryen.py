@@ -17,6 +17,7 @@ def _none_to_null(possibly_none: T | None) -> _cffi_backend.FFI.CData | T:
     return possibly_none
 
 def _change_file_extension(filename: str, extension: str) -> str:
+    # TODO: Change this to actual file handling
     if filename.lower().endswith("." + extension):
         return filename
     split_filename = filename.split(".")
@@ -230,6 +231,22 @@ class Module:
     def validate(self) -> bool:
         return lib.BinaryenModuleValidate(self.ptr)
     
+    def emit_text(self) -> str:
+        text_ptr = lib.BinaryenModuleAllocateAndWriteText(self.ptr)
+        text_bytes = ffi.string(text_ptr)
+        text = text_bytes.decode("ascii")
+
+        # text_ptr is automatically freed by python garbage collector
+        return text
+    
+    def emit_stack_ir(self, optimize: bool) -> str:
+        text_ptr = lib.BinaryenModuleAllocateAndWriteStackIR(self.ptr, optimize)
+        text_bytes = ffi.string(text_ptr)
+        text = text_bytes.decode("ascii")
+
+        # text_ptr is automatically freed by python garbage collector
+        return text
+
     def emit_text(self) -> str:
         text_ptr = lib.BinaryenModuleAllocateAndWriteText(self.ptr)
         text_bytes = ffi.string(text_ptr)

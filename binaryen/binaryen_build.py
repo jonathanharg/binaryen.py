@@ -290,7 +290,7 @@ typedef struct BinaryenModule *BinaryenModuleRef;
 ;
 BinaryenModuleRef BinaryenModuleCreate(void);
 void BinaryenModuleDispose(BinaryenModuleRef module);
-struct BinaryenLiteral
+struct BinaryenLiteralOLD
 {
   uintptr_t type;
   union
@@ -302,6 +302,11 @@ struct BinaryenLiteral
     uint8_t v128[16];
     const char *func;
   };
+};
+struct BinaryenLiteral
+{
+  uintptr_t type;
+  uint8_t v128[16];
 };
 struct BinaryenLiteral BinaryenLiteralInt32(int32_t x);
 struct BinaryenLiteral BinaryenLiteralInt64(int64_t x);

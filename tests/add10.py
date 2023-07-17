@@ -1,26 +1,26 @@
 import binaryen
 
-def add(x, y):
-    return x + y
+def at(x):
+    return x + 10
 
 myModule = binaryen.Module()
 myModule.add_function(
-    b"add",
-    binaryen.type_create([binaryen.i32, binaryen.i32]),
+    b"at",
+    binaryen.i32,
     binaryen.i32,
     [binaryen.i32],
     myModule.block(
         None,
         [
             myModule.local_set(
-                2,
+                1,
                 myModule.binary(
                     binaryen.lib.BinaryenAddInt32(),
                     myModule.local_get(0, binaryen.i32),
-                    myModule.local_get(1, binaryen.i32),
+                    myModule.const(binaryen.lib.BinaryenLiteralInt32(10)),
                 ),
             ),
-            myModule.return_(myModule.local_get(2, binaryen.i32)),
+            myModule.return_(myModule.local_get(1, binaryen.i32)),
         ],
         binaryen.none,
     ),
@@ -29,7 +29,7 @@ myModule.add_function(
 if not myModule.validate():
     raise Exception("Invalid module!")
 
-myModule.add_function_export(b"add", b"add")
+myModule.add_function_export(b"at", b"at")
 
 myModule.optimize()
 myModule.print()

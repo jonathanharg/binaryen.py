@@ -1,60 +1,223 @@
-import platform
+from typing import Any, TypeAlias, TypeVar
+from .types import BinaryenType
+from .lib import lib
+from ._binaryen_cffi import ffi, _cffi_backend
+
+BinaryenExpressionRef: TypeAlias = Any
+BinaryenExpression: TypeAlias = Any
+BinaryenLiteral: TypeAlias = Any
+BinaryenOp: TypeAlias = Any
+BinaryenExpressionId: TypeAlias = Any
+BinaryenExportRef: TypeAlias = Any
+
+T = TypeVar('T')
+def _none_to_null(possibly_none: T | None) -> _cffi_backend.FFI.CData | T:
+    if possibly_none is None:
+        return ffi.NULL
+    return possibly_none
 
 
-from ._binaryen_cffi import ffi
-
-if platform.system() == "Linux":
-    __lib_string = "libbinaryen.so"
-if platform.system() == "Windows":
-    __lib_string = "libbinaryen.dll"
-if platform.system() == "Darwin":
-    __lib_string = "libbinaryen.dylib"
-lib = ffi.dlopen(__lib_string)
+def type_create(types: list[BinaryenType]) -> BinaryenType:
+    return lib.BinaryenTypeCreate(types, len(types))
 
 
-NULL = ffi.NULL
+# Number of arguments
+def type_arity(binaryen_type: BinaryenType) -> int:
+    return lib.BinaryenTypeArity(binaryen_type)
 
-WasmNone = lib.BinaryenTypeNone()
-Int32 = lib.BinaryenTypeInt32()
-Int64 = lib.BinaryenTypeInt64()
-Float32 = lib.BinaryenTypeFloat32()
-Float64 = lib.BinaryenTypeFloat64()
-Vec128 = lib.BinaryenTypeVec128()
-Funcref = lib.BinaryenTypeFuncref()
-Externref = lib.BinaryenTypeExternref()
-Anyref = lib.BinaryenTypeAnyref()
-Eqref = lib.BinaryenTypeEqref()
-I31ref = lib.BinaryenTypeI31ref()
-Structref = lib.BinaryenTypeStructref()
-Arrayref = lib.BinaryenTypeArrayref()
-Stringref = lib.BinaryenTypeStringref()
-StringviewWTF8 = lib.BinaryenTypeStringviewWTF8()
-StringviewWTF16 = lib.BinaryenTypeStringviewWTF16()
-StringviewIter = lib.BinaryenTypeStringviewIter()
-Nullref = lib.BinaryenTypeNullref()
-NullExternref = lib.BinaryenTypeNullExternref()
-NullFuncref = lib.BinaryenTypeNullFuncref()
-Unreachable = lib.BinaryenTypeUnreachable()
-Auto = lib.BinaryenTypeAuto()
+
+# TODO: BinaryenTypeExpand
+
+# TODO: BinaryenPackedType
+
+# TODO: BinaryenHeapType
+
+# TODO: BinaryenStructType
+
+# TODO: BinaryenArrayType
+
+# TODO: BinaryenHeapType
+
+
+def type_is_nullable(binaryen_type: BinaryenType) -> bool:
+    return lib.BinaryenTypeIsNullable(binaryen_type)
+
+
+# TODO: BinaryenTypeFromHeapType
+
+# TODO: BinaryExpressionId
+
+# TODO: BinaryExternalKind
+
+# TODO: BinaryFeatures
+
 
 class Module:
     ptr = None
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.ptr = lib.BinaryenModuleCreate()
         return
-    
-    def addFunction(self, name: bytes, params, results, varTypes, numVarTypes, body):
-        return lib.BinaryenAddFunction(self.ptr, name, params, results, varTypes, numVarTypes, body)
 
-    def localGet(self, index, type):
-        return lib.BinaryenLocalGet(self.ptr, index, type)
+    def __del__(self) -> None:
+        # Free the module when it is garbage collected
+        lib.BinaryenModuleDispose(self.ptr)
 
-    def localSet(self, index, value):
+    # TODO: binaryenLiteral
+
+    # TODO: binaryenOp
+
+    def block(
+        self,
+        name: bytes | None,
+        children: list[BinaryenExpression],
+        binaryen_type: BinaryenType,
+    ) -> BinaryenExpressionRef:
+        return lib.BinaryenBlock(
+            self.ptr, _none_to_null(name), children, len(children), binaryen_type
+        )
+
+    def If(
+        self,
+        condition: BinaryenExpressionRef,
+        if_true: BinaryenExpressionRef,
+        if_false: BinaryenExpressionRef,
+    ) -> BinaryenExpressionRef:
+        return lib.BinaryenBlock(self.ptr, condition, if_true, if_false)
+
+    # TODO: Loop, Break, Switch, Call, CallIndirect, ReturnCall, ReturnCallIndirect,
+
+    def local_get(self, index: int, local_type: BinaryenType) -> BinaryenExpressionRef:
+        return lib.BinaryenLocalGet(self.ptr, index, local_type)
+
+    def local_set(
+        self, index: int, value: BinaryenExpressionRef
+    ) -> BinaryenExpressionRef:
         return lib.BinaryenLocalSet(self.ptr, index, value)
 
-    def print(self):
+    def local_tee(
+        self, index: int, value: BinaryenExpressionRef, value_type: BinaryenType
+    ) -> BinaryenExpressionRef:
+        return lib.BinaryenLocalTee(self.ptr, index, value, value_type)
+
+    def global_get(
+        self, name: bytes, global_type: BinaryenType
+    ) -> BinaryenExpressionRef:
+        return lib.BinaryenGlobalGet(self.ptr, name, global_type)
+
+    def global_set(
+        self, name: bytes, value: BinaryenExpressionRef
+    ) -> BinaryenExpressionRef:
+        return lib.BinaryenGlobalSet(self.ptr, name, value)
+
+    # TODO: Load, Store
+
+    def const(self, value: BinaryenLiteral) -> BinaryenExpressionRef:
+        return lib.BinaryenConst(self.ptr, value)
+
+    def unary(
+        self, op: BinaryenOp, left: BinaryenExpressionRef, right: BinaryenExpressionRef
+    ) -> BinaryenExpressionRef:
+        return lib.BinaryenUnary(self.ptr, op, left, right)
+    
+    def binary(self, op: BinaryenOp, left: BinaryenExpressionRef, right: BinaryenExpressionRef) -> BinaryenExpressionRef:
+        return lib.BinaryenBinary(self.ptr, op, left, right)
+    
+    def select(self, condition: BinaryenExpressionRef, if_true: BinaryenExpressionRef, if_false: BinaryenExpressionRef, select_type: BinaryenType) -> BinaryenExpressionRef:
+        return lib.BinaryenSelect(self.ptr, condition, if_true, if_false, select_type)
+    
+    def drop(self, value:BinaryenExpressionRef) -> BinaryenExpressionRef:
+        return lib.BinaryenDrop(self.ptr, value)
+    
+    # TODO: Come up with a better name for this
+    def return_(self, value: BinaryenExpressionRef | None) -> BinaryenExpressionRef:
+        return lib.BinaryenReturn(self.ptr, _none_to_null(value))
+    
+    # TODO: MemorySize, MemoryGrow
+
+    def nop(self) -> BinaryenExpressionRef:
+        return lib.BinaryenNop(self.ptr)
+    
+    def unreachable(self) -> BinaryenExpressionRef:
+        return lib.BinaryenUnreachable(self.ptr)
+    
+    # TODO: AtomicLoad, AtomicStore, AtomicRMW, AtomicCmpxchg, AtomicWait, AtomicNotify, AtomicFence
+    # TODO: SIMDExtract, SIMDReplace, SIMDShuffle, SIMDTernary, SIMDShift, SIMDLoad, SIMDLoadStoreLane
+    # TODO: MemoryInit, MemoryCopy, MemoryFill,
+    # TODO: RefAs, RefFuc, RefEq
+    # TODO: TableGet, TableSet, TableGrow
+    # TODO: Try, Throw, Rethrow, 
+    # TODO: TupleMake, TupleExtract, Pop, I31New, I31Get
+    # TODO: CallRef, ReftTest, RefCast, BrOn
+    # TODO: StructNew, StructGet, StructSet
+    # TODO: ArrayNew, ArrayNewFixed, ArrayGet, ArraySet, ArrayLen, ArrayCopy
+    # TODO: StringNew, StringConst, StringMeasure, StringEncode, StringConcat, StringEq, StringAs, StringWTF8Advance, StringTWF16Get, StringIterNext, StringIterMove, StringSliceWTF, StringSliceIter
+
+    # TODO This should probably be some sort of inner class
+    def expression_get_id(self, expr: BinaryenExpressionRef) -> BinaryenExpressionId:
+        return lib.BinaryenExpressionGetId(expr)
+    
+    def expression_get_type(self, expr: BinaryenExpressionRef) -> BinaryenType:
+        return lib.BinaryenExpressionGetType(expr)
+
+    def expression_set_type(self, expr: BinaryenExpressionRef, expr_type: BinaryenType) -> None:
+        return lib.BinaryenExpressionSetType(expr, expr_type)
+    
+    def expression_print(self, expr: BinaryenExpressionRef) -> None:
+        return lib.BinaryenExpressionPrint(expr)
+    
+    def expression_finalize(self, expr: BinaryenExpressionRef) -> None:
+        return lib.BinaryenExpressionFinalize(expr)
+    
+    def expression_copy(self, expr: BinaryenExpressionRef) -> BinaryenExpressionRef:
+        return lib.BinaryenExpressionCopy(expr, self.ptr)
+    
+    def block_get_name(self, expr: BinaryenExpressionRef) -> bytes | None:
+        return lib.BinaryenBlockGetName(expr)
+    
+    def block_set_name(self, expr: BinaryenExpressionRef, name: bytes) -> None:
+        return lib.BinaryenBlockSetName(expr, name)
+    
+    def block_get_num_children(self, expr: BinaryenExpressionRef) -> int:
+        return lib.BinaryenBlockGetNumChildren(expr)
+    
+    def block_get_child_at(self, expr: BinaryenExpressionRef, index: int) -> BinaryenExpressionRef:
+        return lib.BinaryenBlockGetChildAt(expr, index)
+    
+    def block_set_child_at(self, expr: BinaryenExpressionRef, index: int, child: BinaryenExpressionRef) -> None:
+        return lib.BinaryenBlockSetChildAt(expr, index, child)
+    
+    def block_append_child(self, expr: BinaryenExpressionRef, child: BinaryenExpressionRef) -> int:
+        return lib.BinaryenBlockAppendChild(expr, child)
+    
+    def block_insert_child_at(self, expr: BinaryenExpressionRef, index: int, child: BinaryenExpressionRef) -> None:
+        return lib.BinaryenBlockInsertChildAt(expr, index, child)
+    
+    def block_remove_child_at(self, expr: BinaryenExpressionRef, index: int) -> BinaryenExpressionRef:
+        return lib.BinaryenBlockRemoveChildAt(expr, index)
+    
+
+
+    def add_function(
+        self,
+        name: bytes,
+        params: BinaryenType,
+        results: BinaryenType,
+        var_types: list[BinaryenType],
+        body: BinaryenExpressionRef,
+    ) -> None:
+        return lib.BinaryenAddFunction(
+            self.ptr, name, params, results, var_types, len(var_types), body
+        )
+    
+    def add_function_export(self, internal_name: bytes, external_name: bytes) -> BinaryenExportRef:
+        return lib.BinaryenAddFunctionExport(self.ptr, internal_name, external_name)
+    
+    def optimize(self) -> None:
+        return lib.BinaryenModuleOptimize(self.ptr)
+
+    def print(self) -> None:
         lib.BinaryenModulePrint(self.ptr)
 
-    def dispose(self):
-        lib.BinaryenModuleDispose(self.ptr)
+    def validate(self) -> bool:
+        return lib.BinaryenModuleValidate(self.ptr)

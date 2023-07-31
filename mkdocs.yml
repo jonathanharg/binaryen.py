@@ -1,0 +1,40 @@
+site_name: Binaryen.py
+site_url: https://example.com/
+repo_url: https://github.com/jonathanharg/binaryen.py
+repo_name: jonathanharg/binaryen.py
+
+theme:
+  name: material
+  logo: assets/web-assembly-icon-white.svg
+  favicon: assets/web-assembly-icon.svg
+
+  icon:
+    repo: fontawesome/brands/github
+  
+  font:
+    text: Open Sans
+    code: Source Code Pro
+  palette: 
+    primary: custom
+    accent: custom
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+
+plugins:
+- search
+- mkdocstrings:
+    default_handler: python
+    handlers:
+      python:
+        options:
+          show_source: false
+
+nav:
+- Home: index.md
+- quickstart.md
+- API Reference: reference.md
+- examples.md
+
+extra_css:
+  - stylesheets/extra.css

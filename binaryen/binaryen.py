@@ -30,6 +30,14 @@ def _change_file_extension(filename: str, extension: str) -> str:
 
 
 def type_create(types: list[BinaryenType]) -> BinaryenType:
+    """Create a Binaryen type
+
+    Args:
+        types (list[BinaryenType]): List of input types
+
+    Returns:
+        BinaryenType: Combined type
+    """
     return lib.BinaryenTypeCreate(types, len(types))
 
 

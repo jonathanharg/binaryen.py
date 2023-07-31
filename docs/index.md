@@ -1,6 +1,5 @@
-# Binaryen.py
 
-Python wrapper for binaryen.
+--8<-- "README.md"
 
 ## Credits
 

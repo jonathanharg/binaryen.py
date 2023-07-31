@@ -1,6 +1,6 @@
 import binaryen
 
-
+# Equivalent python function
 def fib(n):
     if n <= 1:
         return n
@@ -69,7 +69,7 @@ myModule.add_function_export(b"fib", b"fib")
 myModule.print()
 
 myModule.optimize()
-myModule.print()
-# myModule.write_binary(__file__)
 
-# Test with: wasmtime fib.wasm --invoke fib 23
+# Can either print with `myModule.print()` or write to file with `myModule.write_binary(__file__)`
+
+# Run the written binary with `wasmtime fib.wasm --invoke fib 23`

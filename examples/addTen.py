@@ -1,11 +1,12 @@
 import binaryen
 
-def at(x):
+# Equivalent python function
+def addTen(x):
     return x + 10
 
 myModule = binaryen.Module()
 myModule.add_function(
-    b"at",
+    b"addTen",
     binaryen.i32,
     binaryen.i32,
     [binaryen.i32],
@@ -29,10 +30,10 @@ myModule.add_function(
 if not myModule.validate():
     raise Exception("Invalid module!")
 
-myModule.add_function_export(b"at", b"at")
+myModule.add_function_export(b"addTen", b"addTen")
 
 myModule.optimize()
-myModule.print()
-# myModule.write_binary(__file__)
 
-# Test with: wasmtime add10.wasm --invoke at 85
+# Can either print with `myModule.print()` or write to file with `myModule.write_binary(__file__)`
+
+# Run the written binary with `wasmtime addTen.wasm --invoke addTen 12`

@@ -1,5 +1,6 @@
 import binaryen
 
+# Equivalent python function
 def add(x, y):
     return x + y
 
@@ -32,7 +33,7 @@ if not myModule.validate():
 myModule.add_function_export(b"add", b"add")
 
 myModule.optimize()
-myModule.print()
-# myModule.write_binary(__file__)
 
-# Test with: wasmtime add10.wasm --invoke at 85
+# Can either print with `myModule.print()` or write to file with `myModule.write_binary(__file__)`
+
+# Run the written binary with `wasmtime add.wasm --invoke add 85 20`

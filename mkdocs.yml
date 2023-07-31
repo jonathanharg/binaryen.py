@@ -7,10 +7,8 @@ theme:
   name: material
   logo: assets/web-assembly-icon-white.svg
   favicon: assets/web-assembly-icon.svg
-
   icon:
     repo: fontawesome/brands/github
-  
   font:
     text: Open Sans
     code: Source Code Pro
@@ -18,6 +16,7 @@ theme:
     primary: custom
     accent: custom
   features:
+    - content.code.copy
     - navigation.tabs
     - navigation.tabs.sticky
 
@@ -29,12 +28,21 @@ plugins:
       python:
         options:
           show_source: false
+          show_docstring_examples: true
 
 nav:
 - Home: index.md
-- quickstart.md
 - API Reference: reference.md
 - examples.md
 
 extra_css:
   - stylesheets/extra.css
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences

@@ -66,8 +66,6 @@ if not myModule.validate():
 
 myModule.add_function_export(b"fib", b"fib")
 
-myModule.print()
-
 myModule.optimize()
 
 # Can either print with `myModule.print()` or write to file with `myModule.write_binary(__file__)`

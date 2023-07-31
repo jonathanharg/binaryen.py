@@ -4,6 +4,7 @@ import binaryen
 def addTen(x):
     return x + 10
 
+
 myModule = binaryen.Module()
 myModule.add_function(
     b"addTen",

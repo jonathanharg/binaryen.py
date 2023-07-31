@@ -4,6 +4,7 @@ import binaryen
 def add(x, y):
     return x + y
 
+
 myModule = binaryen.Module()
 myModule.add_function(
     b"add",

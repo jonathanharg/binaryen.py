@@ -7,11 +7,12 @@ NULL = ffi.NULL
 CData: TypeAlias = ffi.CData
 
 # Empty type, under the hood all Binaryen types are integers
-# we don't want users to believe that they can modify types with 
+# we don't want users to believe that they can modify types with
 # traditional integer operations, because they can't.
 @final
 class BType:
     pass
+
 
 BinaryenNone = NewType("BinaryenNone", BType)
 BinaryenInt32 = NewType("BinaryenInt32", BType)

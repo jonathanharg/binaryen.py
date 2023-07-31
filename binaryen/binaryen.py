@@ -37,7 +37,7 @@ def type_create(types: list[BinaryenType]) -> BinaryenType:
 
     Returns:
         BinaryenType: Combined type
-    
+
     Examples:
         Under the hood, BinaryenTypes are stored as numeric ids
         >>> twoStrings = binaryen.type_create([binaryen.stringref, binaryen.stringref])
@@ -73,7 +73,7 @@ def type_is_nullable(binaryen_type: BinaryenType) -> bool:
 
     Returns:
         bool: If the type is nullable
-    
+
     Examples:
         >>> binaryen.type_is_nullable(binaryen.i32)
         False

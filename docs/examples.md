@@ -11,7 +11,7 @@ Various example uses of binaryen.py
 ## [Adding a constant](https://github.com/jonathanharg/binaryen.py/blob/main/examples/add10.py)
 
 ```py title="add10.py"
---8<-- "examples/addTen.py:7:28"
+--8<-- "examples/addTen.py:7:29"
 ```
 
 ## [Fibonacci](https://github.com/jonathanharg/binaryen.py/blob/main/examples/fib.py)

@@ -7,7 +7,8 @@ ffibuilder.set_source("_binaryen_cffi", None)
 # Remove all deprecated
 # format clang-format -style "{BasedOnStyle: llvm, ColumnLimit: 0, AlignAfterOpenBracket: BlockIndent}" binaryen-py.h
 
-ffibuilder.cdef("""
+ffibuilder.cdef(
+    """
 typedef uint32_t BinaryenIndex;
 typedef uintptr_t BinaryenType;
 BinaryenType BinaryenTypeNone(void);
@@ -2485,7 +2486,8 @@ void BinaryenModuleSetFieldName(BinaryenModuleRef module,
                                 const char *name);
 void BinaryenSetColorsEnabled(bool enabled);
 bool BinaryenAreColorsEnabled();
-""")
+"""
+)
 
 if __name__ == "__main__":
     ffibuilder.compile()

@@ -19,20 +19,37 @@ theme:
     - content.code.copy
     - navigation.tabs
     - navigation.tabs.sticky
+    - toc.follow
+
+watch:
+  - "binaryen"
 
 plugins:
 - search
+- git-revision-date-localized:
+    enable_creation_date: true
 - mkdocstrings:
     default_handler: python
     handlers:
       python:
+        paths: [binaryen]
         options:
+        # TODO: Don't hide BinaryenType
+          filters: ["!^_", "!Binaryen", "!BType"]
           show_source: false
+          show_if_no_docstring: true
+          signature_crossrefs: true
+          members_order: source
+          show_root_full_path: false
           show_docstring_examples: true
 
 nav:
 - Home: index.md
-- API Reference: reference.md
+- API Reference:
+  - reference/types.md
+  - reference/module.md
+  - reference/expression.md
+  - reference/block.md
 - examples.md
 
 extra_css:

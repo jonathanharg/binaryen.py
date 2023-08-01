@@ -1,3 +1,5 @@
+"""Binaryen representation of WebAssembly modules"""
+
 from typing import TypeVar, TypeAlias, Any
 
 from .lib import lib
@@ -10,6 +12,7 @@ T = TypeVar("T")
 BinaryenLiteral: TypeAlias = Any
 BinaryenOp: TypeAlias = Any
 BinaryenExportRef: TypeAlias = Any
+
 
 def _none_to_null(possibly_none: T | None) -> _cffi_backend.FFI.CData | T:
     if possibly_none is None:
@@ -26,16 +29,29 @@ def _change_file_extension(filename: str, extension: str) -> str:
         split_filename[-1] = extension
     return ".".join(split_filename)
 
+
 class Module:
-    ptr = None
+    """A WebAssembly Module
+
+    Modules contain lists of functions, imports, exports, function types. The module owns them and will free
+    their memory when the module is no longer in use.
+
+    Expressions are also allocated inside modules, and freed with the module. Expressions are not added directly on the module, instead, they are arguments to other expressions (and then they
+    are the children of that AST node), or to a function (and then they are the body of that function).
+
+    A module can also contain a function table for indirect calls, a memory, and a start method.
+
+    Attributes:
+        ref (cdata): A pointer to the Binaryen module. Only access this if you know what you're doing. Modifying this or using this, unless done very carefully, will almost certainly lead to errors or a crash.
+    """
 
     def __init__(self):
-        self.ptr = lib.BinaryenModuleCreate()
+        self.ref = lib.BinaryenModuleCreate()
         return
 
     def __del__(self):
         # Free the module when it is garbage collected
-        lib.BinaryenModuleDispose(self.ptr)
+        lib.BinaryenModuleDispose(self.ref)
 
     # TODO: binaryenLiteral
 
@@ -50,7 +66,7 @@ class Module:
         # Convert children object list to list of children pointers
         children_refs = list(map(lambda x: x.ref, children))
         ref = lib.BinaryenBlock(
-            self.ptr,
+            self.ref,
             _none_to_null(name),
             children_refs,
             len(children_refs),
@@ -64,45 +80,45 @@ class Module:
         if_true: Expression,
         if_false: Expression,
     ) -> Expression:
-        ref = lib.BinaryenIf(self.ptr, condition.ref, if_true.ref, if_false.ref)
+        ref = lib.BinaryenIf(self.ref, condition.ref, if_true.ref, if_false.ref)
         return Expression(ref)
 
     # TODO: Loop, Break, Switch, Call, CallIndirect, ReturnCall, ReturnCallIndirect,
 
     def local_get(self, index: int, local_type: BinaryenType) -> Expression:
-        ref = lib.BinaryenLocalGet(self.ptr, index, local_type)
+        ref = lib.BinaryenLocalGet(self.ref, index, local_type)
         return Expression(ref)
 
     def local_set(self, index: int, value: Expression) -> Expression:
-        ref = lib.BinaryenLocalSet(self.ptr, index, value.ref)
+        ref = lib.BinaryenLocalSet(self.ref, index, value.ref)
         return Expression(ref)
 
     def local_tee(
         self, index: int, value: Expression, value_type: BinaryenType
     ) -> Expression:
-        ref = lib.BinaryenLocalTee(self.ptr, index, value.ref, value_type)
+        ref = lib.BinaryenLocalTee(self.ref, index, value.ref, value_type)
         return Expression(ref)
 
     def global_get(self, name: bytes, global_type: BinaryenType) -> Expression:
-        ref = lib.BinaryenGlobalGet(self.ptr, name, global_type)
+        ref = lib.BinaryenGlobalGet(self.ref, name, global_type)
         return Expression(ref)
 
     def global_set(self, name: bytes, value: Expression) -> Expression:
-        ref = lib.BinaryenGlobalSet(self.ptr, name, value.ref)
+        ref = lib.BinaryenGlobalSet(self.ref, name, value.ref)
         return Expression(ref)
 
     # TODO: Load, Store
 
     def const(self, value: BinaryenLiteral) -> Expression:
-        ref = lib.BinaryenConst(self.ptr, value)
+        ref = lib.BinaryenConst(self.ref, value)
         return Expression(ref)
 
     def unary(self, op: BinaryenOp, left: Expression, right: Expression) -> Expression:
-        ref = lib.BinaryenUnary(self.ptr, op, left.ref, right.ref)
+        ref = lib.BinaryenUnary(self.ref, op, left.ref, right.ref)
         return Expression(ref)
 
     def binary(self, op: BinaryenOp, left: Expression, right: Expression) -> Expression:
-        ref = lib.BinaryenBinary(self.ptr, op, left.ref, right.ref)
+        ref = lib.BinaryenBinary(self.ref, op, left.ref, right.ref)
         return Expression(ref)
 
     def select(
@@ -113,28 +129,28 @@ class Module:
         select_type: BinaryenType,
     ) -> Expression:
         ref = lib.BinaryenSelect(
-            self.ptr, condition.ref, if_true.ref, if_false.ref, select_type
+            self.ref, condition.ref, if_true.ref, if_false.ref, select_type
         )
         return Expression(ref)
 
     def drop(self, value: Expression) -> Expression:
-        ref = lib.BinaryenDrop(self.ptr, value.ref)
+        ref = lib.BinaryenDrop(self.ref, value.ref)
         return Expression(ref)
 
     # TODO: Come up with a better name for this
     def Return(self, value: Expression | None) -> Expression:
         expression_ref = getattr(value, "ref", None)
-        result_ref = lib.BinaryenReturn(self.ptr, _none_to_null(expression_ref))
+        result_ref = lib.BinaryenReturn(self.ref, _none_to_null(expression_ref))
         return Expression(result_ref)
 
     # TODO: MemorySize, MemoryGrow
 
     def nop(self) -> Expression:
-        ref = lib.BinaryenNop(self.ptr)
+        ref = lib.BinaryenNop(self.ref)
         return Expression(ref)
 
     def unreachable(self) -> Expression:
-        ref = lib.BinaryenUnreachable(self.ptr)
+        ref = lib.BinaryenUnreachable(self.ref)
         return Expression(ref)
 
     # TODO: AtomicLoad, AtomicStore, AtomicRMW, AtomicCmpxchg, AtomicWait, AtomicNotify, AtomicFence
@@ -162,7 +178,7 @@ class Module:
         body: Expression,
     ) -> None:
         return lib.BinaryenAddFunction(
-            self.ptr, name, params, results, var_types, len(var_types), body.ref
+            self.ref, name, params, results, var_types, len(var_types), body.ref
         )
 
     def call(
@@ -173,26 +189,26 @@ class Module:
     ) -> Expression:
         operand_refs = list(map(lambda x: x.ref, operands))
         ref = lib.BinaryenCall(
-            self.ptr, target, operand_refs, len(operand_refs), return_type
+            self.ref, target, operand_refs, len(operand_refs), return_type
         )
         return Expression(ref)
 
     def add_function_export(
         self, internal_name: bytes, external_name: bytes
     ) -> BinaryenExportRef:
-        return lib.BinaryenAddFunctionExport(self.ptr, internal_name, external_name)
+        return lib.BinaryenAddFunctionExport(self.ref, internal_name, external_name)
 
     def optimize(self) -> None:
-        return lib.BinaryenModuleOptimize(self.ptr)
+        return lib.BinaryenModuleOptimize(self.ref)
 
     def print(self) -> None:
-        lib.BinaryenModulePrint(self.ptr)
+        lib.BinaryenModulePrint(self.ref)
 
     def validate(self) -> bool:
-        return lib.BinaryenModuleValidate(self.ptr)
+        return lib.BinaryenModuleValidate(self.ref)
 
     def emit_text(self) -> str:
-        text_ptr = lib.BinaryenModuleAllocateAndWriteText(self.ptr)
+        text_ptr = lib.BinaryenModuleAllocateAndWriteText(self.ref)
         text_bytes = ffi.string(text_ptr)
         text = text_bytes.decode("ascii")
 
@@ -200,7 +216,7 @@ class Module:
         return text
 
     def emit_stack_ir(self, optimize: bool) -> str:
-        text_ptr = lib.BinaryenModuleAllocateAndWriteStackIR(self.ptr, optimize)
+        text_ptr = lib.BinaryenModuleAllocateAndWriteStackIR(self.ref, optimize)
         text_bytes = ffi.string(text_ptr)
         text = text_bytes.decode("ascii")
 
@@ -208,7 +224,7 @@ class Module:
         return text
 
     def emit_text(self) -> str:
-        text_ptr = lib.BinaryenModuleAllocateAndWriteText(self.ptr)
+        text_ptr = lib.BinaryenModuleAllocateAndWriteText(self.ref)
         text_bytes = ffi.string(text_ptr)
         text = text_bytes.decode("ascii")
 
@@ -216,7 +232,7 @@ class Module:
         return text
 
     def emit_binary(self) -> bytes:
-        struct = lib.BinaryenModuleAllocateAndWrite(self.ptr, ffi.NULL)
+        struct = lib.BinaryenModuleAllocateAndWrite(self.ref, ffi.NULL)
 
         binary_ptr = ffi.cast("char *", struct.binary)  # char * pointer to the binary
         binary_len = struct.binaryBytes

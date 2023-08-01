@@ -1,3 +1,9 @@
+---
+hide:
+  - navigation
+#   - toc
+---
+
 # Examples
 
 Various example uses of binaryen.py

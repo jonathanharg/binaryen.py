@@ -5,8 +5,6 @@ from .types import BinaryenType
 
 
 class Expression:
-    ref = None
-
     def __init__(self, ref):
         self.ref = ref
 
@@ -25,9 +23,10 @@ class Expression:
     def finalize(self) -> None:
         return lib.BinaryenExpressionFinalize(self.ref)
 
-    def copy(self, module: 'Module') -> Expression:
-        ref = lib.BinaryenExpressionCopy(self.ref, module.ptr)
+    def copy(self, module: "Module") -> Expression:
+        ref = lib.BinaryenExpressionCopy(self.ref, module.ref)
         return Expression(ref)
+
 
 class Block(Expression):
     def get_name(self) -> bytes | None:

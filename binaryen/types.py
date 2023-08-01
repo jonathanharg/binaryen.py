@@ -1,3 +1,5 @@
+"""Core Binaryen types"""
+
 from typing import NewType, TypeAlias, Union, cast, final
 from .lib import lib
 from ._binaryen_cffi import ffi
@@ -86,3 +88,82 @@ BinaryenType: TypeAlias = Union[
     BinaryenUnreachable,
     BinaryenAuto,
 ]
+
+
+def type_create(types: list[BinaryenType]) -> BinaryenType:
+    """Create a Binaryen type
+
+    Args:
+        types (list[BinaryenType]): List of input types
+
+    Returns:
+        BinaryenType: Combined type
+
+    Note:
+        Under the hood, BinaryenTypes are stored as integer ids
+
+    Examples:
+        >>> twoStrings = binaryen.type_create([binaryen.stringref, binaryen.stringref])
+        >>> isinstance(twoStrings, int)
+        True
+    """
+    return lib.BinaryenTypeCreate(types, len(types))
+
+
+# Number of arguments
+def type_arity(binaryen_type: BinaryenType) -> int:
+    """The number of arguments or operands a type takes
+
+    Args:
+        binaryen_type (BinaryenType): The type to check
+
+    Returns:
+        int: The number of operands for this type
+
+    Examples:
+        >>> binaryen.type_arity(binaryen.i32)
+        1
+        >>> binaryen.type_arity(binaryen.type_create([binaryen.i32,binaryen.i32]))
+        2
+    """
+    return lib.BinaryenTypeArity(binaryen_type)
+
+
+# TODO: BinaryenTypeExpand
+
+# TODO: BinaryenPackedType
+
+# TODO: BinaryenHeapType
+
+# TODO: BinaryenStructType
+
+# TODO: BinaryenArrayType
+
+# TODO: BinaryenHeapType
+
+
+def type_is_nullable(binaryen_type: BinaryenType) -> bool:
+    """Get if a Binaryen type is nullable (possibly none) or not.
+
+    Args:
+        binaryen_type (BinaryenType): The type to be tested
+
+    Returns:
+        bool: If the type is nullable
+
+    Examples:
+        >>> binaryen.type_is_nullable(binaryen.i32)
+        False
+        >>> binaryen.type_is_nullable(binaryen.anyref)
+        True
+    """
+    return lib.BinaryenTypeIsNullable(binaryen_type)
+
+
+# TODO: BinaryenTypeFromHeapType
+
+# TODO: BinaryExpressionId
+
+# TODO: BinaryExternalKind
+
+# TODO: BinaryFeatures

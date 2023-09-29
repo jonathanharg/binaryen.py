@@ -86,7 +86,6 @@ BinaryenType: TypeAlias = Union[
     BinaryenNullExternref,
     BinaryenNullFuncref,
     BinaryenUnreachable,
-    BinaryenAuto,
 ]
 
 

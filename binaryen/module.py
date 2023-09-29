@@ -3,7 +3,7 @@
 from typing import TypeVar, TypeAlias, Any
 
 from .lib import lib
-from .types import BinaryenType
+from .types import BinaryenType, BinaryenAuto, NULL, BinaryenNone, none
 from .expression import Expression, Block
 from ._binaryen_cffi import ffi, _cffi_backend
 
@@ -17,6 +17,11 @@ BinaryenExportRef: TypeAlias = Any
 def _none_to_null(possibly_none: T | None) -> _cffi_backend.FFI.CData | T:
     if possibly_none is None:
         return ffi.NULL
+    return possibly_none
+
+def _none_to_binaryen(possibly_none: T | None) -> BinaryenNone | T:
+    if possibly_none is None:
+        return none
     return possibly_none
 
 
@@ -61,7 +66,7 @@ class Module:
         self,
         name: bytes | None,
         children: list[Expression],
-        binaryen_type: BinaryenType,
+        binaryen_type: BinaryenType | BinaryenAuto,
     ) -> Block:
         # Convert children object list to list of children pointers
         children_refs = list(map(lambda x: x.ref, children))
@@ -167,18 +172,46 @@ class Module:
 
     # NOTE: Done - expression getId to BlockRemoveChildAt
 
+    # TODO: Carry on from here
+
+    # Imports
+
+    def add_function_import(
+        self,
+        internalName: bytes,
+        externalModuleName: bytes,
+        externalBaseName: bytes,
+        params: BinaryenType,
+        results: BinaryenType,
+    ) -> None:
+        lib.BinaryenAddFunctionImport(
+            self.ref,
+            internalName,
+            externalModuleName,
+            externalBaseName,
+            params,
+            results,
+        )
+
     # EXTRA:
 
     def add_function(
         self,
         name: bytes,
-        params: BinaryenType,
-        results: BinaryenType,
-        var_types: list[BinaryenType],
+        params: BinaryenType | None,
+        results: BinaryenType | None,
+        var_types: list[BinaryenType] | None,
         body: Expression,
     ) -> None:
+        if var_types is None or (len(var_types) == 0):
+            length = 0
+            c_var_types = _none_to_null(var_types)
+        else:
+            length = len(var_types)
+            c_var_types = var_types
+
         return lib.BinaryenAddFunction(
-            self.ref, name, params, results, var_types, len(var_types), body.ref
+            self.ref, name, _none_to_binaryen(params), _none_to_binaryen(results), c_var_types, length, body.ref
         )
 
     def call(
@@ -192,6 +225,9 @@ class Module:
             self.ref, target, operand_refs, len(operand_refs), return_type
         )
         return Expression(ref)
+    
+    def set_memory():
+        raise NotImplementedError
 
     def add_function_export(
         self, internal_name: bytes, external_name: bytes

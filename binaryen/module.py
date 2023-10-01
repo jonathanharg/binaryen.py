@@ -19,6 +19,7 @@ def _none_to_null(possibly_none: T | None) -> _cffi_backend.FFI.CData | T:
         return ffi.NULL
     return possibly_none
 
+
 def _none_to_binaryen(possibly_none: T | None) -> BinaryenNone | T:
     if possibly_none is None:
         return none
@@ -211,7 +212,13 @@ class Module:
             c_var_types = var_types
 
         return lib.BinaryenAddFunction(
-            self.ref, name, _none_to_binaryen(params), _none_to_binaryen(results), c_var_types, length, body.ref
+            self.ref,
+            name,
+            _none_to_binaryen(params),
+            _none_to_binaryen(results),
+            c_var_types,
+            length,
+            body.ref,
         )
 
     def call(
@@ -225,7 +232,7 @@ class Module:
             self.ref, target, operand_refs, len(operand_refs), return_type
         )
         return Expression(ref)
-    
+
     def set_memory():
         raise NotImplementedError
 

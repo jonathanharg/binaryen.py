@@ -1,39 +1,23 @@
 import platform
 from typing import Any, cast
+import os
 from ._binaryen_cffi import ffi
 
-__macos_error = """You either do not have the binaryen library installed, or it is not in your standard C library path.
-
-Recommended: Using the brew package manager (https://brew.sh/) run brew install binaryen
-
-Alternatively add the precompiled libbinaryen.dylib from https://github.com/WebAssembly/binaryen/releases to your path.
-"""
-
-__windows_error = """You either do not have the binaryen library installed, or it is not in your standard C library path.
-
-Add the precompiled libbinaryen.dll from https://github.com/WebAssembly/binaryen/releases to your path.
-"""
-
-__linux_error = """You either do not have the binaryen library installed, or it is not in your standard C library path.
-
-Recommended: Use your distributions package manager to install binaryen.
-
-Alternatively add the precompiled libbinaryen.so from https://github.com/WebAssembly/binaryen/releases to your path.
-"""
+__dirname = os.path.dirname(__file__)
 
 __lib_string = ""
-__error_message = ""
 if platform.system() == "Linux":
-    __error_message = __linux_error
-    __lib_string = "libbinaryen.so"
+    __lib_string = os.path.join(__dirname, "./libbinaryen/x86_64-linux/libbinaryen.a")
 if platform.system() == "Windows":
-    __error_message = __windows_error
-    __lib_string = "libbinaryen.dll"
+    __lib_string = os.path.join(__dirname, "./libbinaryen/x86_64-windows/binaryen.lib")
 if platform.system() == "Darwin":
-    __error_message = __macos_error
-    __lib_string = "libbinaryen.dylib"
+    if platform.machine() == "arm64":
+        __lib_string = os.path.join(
+            __dirname, "./libbinaryen/arm64-macos/libbinaryen.dylib"
+        )
+    else:
+        __lib_string = os.path.join(
+            __dirname, "./libbinaryen/x86_64-macos/libbinaryen.dylib"
+        )
 
-try:
-    lib = cast(Any, ffi.dlopen(__lib_string))
-except OSError as error:
-    raise OSError(__error_message) from error
+lib = cast(Any, ffi.dlopen(__lib_string))

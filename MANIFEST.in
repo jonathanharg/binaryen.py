@@ -1,3 +1,8 @@
 exclude binaryen/binaryen_build.py
 exclude binaryen/libbinaryen/binaryen-c.h
 exclude binaryen/libbinaryen/wasm-delegations.def
+
+include binaryen/libbinaryen/arm64-macos/libbinaryen.dylib
+include binaryen/libbinaryen/x86_64-linux/libbinaryen.a
+include binaryen/libbinaryen/x86_64-macos/libbinaryen.dylib
+include binaryen/libbinaryen/x86_64-windows/binaryen.lib

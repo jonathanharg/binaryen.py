@@ -1,0 +1,3 @@
+exclude binaryen/binaryen_build.py
+exclude binaryen/libbinaryen/binaryen-c.h
+exclude binaryen/libbinaryen/wasm-delegations.def

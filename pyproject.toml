@@ -4,10 +4,27 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "binaryen.py"
-authors = [{ name = "Jonathan Hargreaves", email = "jhargreaves189@gmail.com" }]
 description = "A Python wrapper for Binaryen"
+license = "Apache-2.0"
+authors = [{ name = "Jonathan Hargreaves", email = "jhargreaves189@gmail.com" }]
 requires-python = ">=3.11"
 readme = "README.md"
+keywords = ["WebAssembly", "WASM", "binaryen", "binaryen.py"]
+classifiers = [
+    "Environment :: MacOS X",
+    "Environment :: WebAssembly",
+    "Environment :: WebAssembly :: WASI",
+    "Environment :: Win32 (MS Windows)",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Natural Language :: English",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Assembly",
+    "Programming Language :: Python",
+    "Topic :: Software Development :: Compilers",
+]
 dependencies = ['cffi >= 1.15.1']
 dynamic = ["version"]
 

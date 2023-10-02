@@ -1,11 +1,9 @@
 """Core Binaryen types"""
 
 from typing import NewType, TypeAlias, Union, cast, final
-from .lib import lib
-from ._binaryen_cffi import ffi
+from .lib import lib, ffi
 
 NULL = ffi.NULL
-
 CData: TypeAlias = ffi.CData
 
 # Empty type, under the hood all Binaryen types are integers

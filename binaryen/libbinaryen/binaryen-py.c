@@ -182,7 +182,14 @@ BinaryenModuleRef BinaryenModuleCreate(void);
 void BinaryenModuleDispose(BinaryenModuleRef module);
 struct BinaryenLiteral {
   uintptr_t type;
-  uint8_t v128[16];
+  union {
+    int32_t i32;
+    int64_t i64;
+    float f32;
+    double f64;
+    uint8_t v128[16];
+    const char *func;
+  };
 };
 struct BinaryenLiteral BinaryenLiteralInt32(int32_t x);
 struct BinaryenLiteral BinaryenLiteralInt64(int64_t x);

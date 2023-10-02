@@ -1,5 +1,9 @@
 .vscode
 .DS_Store
+binaryen/libbinaryen/macos-arm64
+binaryen/libbinaryen/macos-x86_64
+binaryen/libbinaryen/linux-x86_64
+binaryen/libbinaryen/windows-x86_64
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

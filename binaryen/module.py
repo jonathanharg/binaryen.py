@@ -2,10 +2,9 @@
 
 from typing import TypeVar, TypeAlias, Any
 
-from .lib import lib
-from .types import BinaryenType, BinaryenAuto, NULL, BinaryenNone, none
+from .lib import lib, ffi
+from .types import BinaryenType, BinaryenAuto, BinaryenNone, none, CData
 from .expression import Expression, Block
-from ._binaryen_cffi import ffi, _cffi_backend
 
 T = TypeVar("T")
 
@@ -14,7 +13,7 @@ BinaryenOp: TypeAlias = Any
 BinaryenExportRef: TypeAlias = Any
 
 
-def _none_to_null(possibly_none: T | None) -> _cffi_backend.FFI.CData | T:
+def _none_to_null(possibly_none: T | None) -> CData | T:
     if possibly_none is None:
         return ffi.NULL
     return possibly_none

@@ -43,9 +43,9 @@
 #ifndef wasm_binaryen_c_h
 #define wasm_binaryen_c_h
 
-// #include <stdbool.h>
-// #include <stddef.h>
-// #include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 
 #ifdef __GNUC__
 #define WASM_DEPRECATED __attribute__((deprecated))

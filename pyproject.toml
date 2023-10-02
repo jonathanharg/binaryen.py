@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "binaryen.py"
 description = "A Python wrapper for Binaryen"
-license = "Apache-2.0"
+license = { file = "LICENSE" }
 authors = [{ name = "Jonathan Hargreaves", email = "jhargreaves189@gmail.com" }]
 requires-python = ">=3.11"
 readme = "README.md"

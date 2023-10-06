@@ -1,9 +1,14 @@
 .vscode
 .DS_Store
+
 binaryen/libbinaryen/macos-arm64
 binaryen/libbinaryen/macos-x86_64
 binaryen/libbinaryen/linux-x86_64
 binaryen/libbinaryen/windows-x86_64
+
+binaryen/libbinaryen/binaryen_cffi.*
+binaryen/libbinaryen/binaryen-c.h
+binaryen/libbinaryen/wasm-delegations.def
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

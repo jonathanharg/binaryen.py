@@ -22,6 +22,7 @@ def copy_header():
         header_source = os.path.join(libbinaryen_dir, "./binaryen/src/wasm-delegations.def")
         shutil.copy(header_source, header_path)
 
+# FIXME: This is broken on Windows
 def create_c_source():
     """Use the binaryen header file to generate a C source file with every function prototype. This allows Python to execute binaryen functions.
     

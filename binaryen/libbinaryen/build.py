@@ -15,12 +15,14 @@ def copy_header():
     """Copy the necessary binaryen header files into the package.
     """
     if not os.path.isfile(header_path):
+        print("COPYING HEADER")
         header_source = os.path.join(libbinaryen_dir, "./binaryen/src/binaryen-c.h")
         shutil.copy(header_source, header_path)
 
     if not os.path.isfile(wasm_def_path):
-        header_source = os.path.join(libbinaryen_dir, "./binaryen/src/wasm-delegations.def")
-        shutil.copy(header_source, header_path)
+        print("COPYING DELEGATIONS")
+        wasm_def_source = os.path.join(libbinaryen_dir, "./binaryen/src/wasm-delegations.def")
+        shutil.copy(wasm_def_source, wasm_def_path)
 
 # FIXME: This is broken on Windows
 def create_c_source():
@@ -111,23 +113,22 @@ def compile_binaryen():
     subprocess.run(["cmake", "--build", target_dir, "-v", "--config", "Release", "--target", "install"], check=True)
 
 
-ffibuilder.cdef(create_c_source())
-
-ffibuilder.set_source(
-    "binaryen_cffi",
-    f"""
-     #include "{header_path}"
-""",
-    libraries=["binaryen"],
-    library_dirs=[os.path.join(libbinaryen_dir,f"{get_target()}/install/lib/")]
-)
-
 if __name__ == "__main__":
     # Save and restore current directory
     current_directory = os.getcwd()
     os.chdir(libbinaryen_dir)
 
     compile_binaryen()
+
+    ffibuilder.cdef(create_c_source())
+    ffibuilder.set_source(
+        "binaryen_cffi",
+        f"""
+        #include "{header_path}"
+    """,
+        libraries=["binaryen"],
+        library_dirs=[os.path.join(libbinaryen_dir,f"{get_target()}/install/lib/")]
+    )
     ffibuilder.compile(verbose=True)
 
     os.chdir(current_directory)

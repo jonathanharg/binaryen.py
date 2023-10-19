@@ -3,7 +3,8 @@
 from typing import TypeVar, TypeAlias, Any
 
 from .lib import lib, ffi
-from .types import BinaryenType, BinaryenAuto, BinaryenNone, none, CData
+from .types import BinaryenType, BinaryenAuto, BinaryenNone, CData
+from .literals import none
 from .expression import Expression, Block
 
 T = TypeVar("T")
@@ -59,8 +60,6 @@ class Module:
         lib.BinaryenModuleDispose(self.ref)
 
     # TODO: binaryenLiteral
-
-    # TODO: binaryenOp
 
     def block(
         self,

@@ -13,7 +13,7 @@ pip install binaryen.py
 ## Test
 
 ```bash
-pytest --doctest-modules --doctest-continue-on-failure
+pytest --doctest-modules --doctest-continue-on-failure --ignore=binaryen/libbinaryen/binaryen --ignore=binaryen/libbinaryen/macos-arm
 ```
 
 ## Format

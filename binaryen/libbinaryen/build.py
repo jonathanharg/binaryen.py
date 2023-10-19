@@ -94,7 +94,7 @@ def compile_binaryen():
     assert git_version == required_version
 
     # Construct platform specific build arguments
-    platform_specifc_args = ['-G', 'Ninja']
+    platform_specifc_args = ['-GNinja']
 
     if platform.system() == "Windows":
         # Don't use Ninja on windows

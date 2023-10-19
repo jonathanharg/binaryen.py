@@ -8,7 +8,7 @@ def add(x, y):
 myModule = binaryen.Module()
 myModule.add_function(
     b"add",
-    binaryen.type_create([binaryen.i32, binaryen.i32]),
+    binaryen.types.create([binaryen.i32, binaryen.i32]),
     binaryen.i32,
     [binaryen.i32],
     myModule.block(

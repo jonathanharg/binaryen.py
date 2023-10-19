@@ -13,7 +13,7 @@ mod.add_function_import(
     b"print",
     b"wasi_unstable",
     b"fd_write",
-    b.type_create([b.i32, b.i32, b.i32, b.i32]),
+    b.types.create([b.i32, b.i32, b.i32, b.i32]),
     b.i32,
 )
 # b.lib.BinaryenSetMemory(mod.ref,1,1,b"memory", [b"Hello WASM!\n"], [False], [b.NULL], [12], 1, False, False, b"wasmmemory")

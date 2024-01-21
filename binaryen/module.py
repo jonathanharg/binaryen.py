@@ -26,16 +26,6 @@ def _none_to_binaryen(possibly_none: T | None) -> BinaryenNone | T:
     return possibly_none
 
 
-def _change_file_extension(filename: str, extension: str) -> str:
-    # TODO: Change this to actual file handling
-    if filename.lower().endswith("." + extension):
-        return filename
-    split_filename = filename.split(".")
-    if len(split_filename) > 1:
-        split_filename[-1] = extension
-    return ".".join(split_filename)
-
-
 class Module:
     """A WebAssembly Module
 
@@ -284,15 +274,11 @@ class Module:
         return binary
 
     def write_text(self, filename: str):
-        filename_wat = _change_file_extension(filename, "wat")
-
-        with open(filename_wat, "x", encoding="utf-8") as file:
+        with open(filename, "x", encoding="utf-8") as file:
             text = self.emit_text()
             file.write(text)
 
     def write_binary(self, filename: str):
-        filename_wasm = _change_file_extension(filename, "wasm")
-
-        with open(filename_wasm, "xb") as file:
+        with open(filename, "xb") as file:
             binary = self.emit_binary()
             file.write(binary)

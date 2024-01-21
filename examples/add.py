@@ -35,6 +35,8 @@ myModule.add_function_export(b"add", b"add")
 
 myModule.optimize()
 
+myModule.write_text("out.wat")
+
 # Can either print with `myModule.print()` or write to file with `myModule.write_binary(__file__)`
 
 # Run the written binary with `wasmtime add.wasm --invoke add 85 20`

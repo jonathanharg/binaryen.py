@@ -2,6 +2,8 @@
 
 from typing import TypeVar, TypeAlias, Any
 
+from .functionref import FunctionRef
+
 from .lib import lib, ffi
 from .types import BinaryenType, BinaryenAuto, BinaryenNone, CData
 from .literals import none
@@ -76,8 +78,19 @@ class Module:
     ) -> Expression:
         ref = lib.BinaryenIf(self.ref, condition.ref, if_true.ref, if_false.ref)
         return Expression(ref)
+    
+    def loop(self, label: bytes, body: Expression):
+        ref = lib.BinaryenLoop(self.ref, label, body.ref)
+        return Expression(ref)
 
-    # TODO: Loop, Break, Switch, Call, CallIndirect, ReturnCall, ReturnCallIndirect,
+    def Break(self, name: bytes, condition: Expression | None, value: Expression | None):
+        condition_ref = ffi.NULL if condition is None else condition.ref
+        value_ref = ffi.NULL if value is None else value.ref
+
+        ref = lib.BinaryenBreak(self.ref, name,condition_ref, value_ref)
+        return Expression(ref)
+
+    # TODO: Switch, Call, CallIndirect, ReturnCall, ReturnCallIndirect,
 
     def local_get(self, index: int, local_type: BinaryenType) -> Expression:
         ref = lib.BinaryenLocalGet(self.ref, index, local_type)
@@ -107,8 +120,8 @@ class Module:
         ref = lib.BinaryenConst(self.ref, value)
         return Expression(ref)
 
-    def unary(self, op: BinaryenOp, left: Expression, right: Expression) -> Expression:
-        ref = lib.BinaryenUnary(self.ref, op, left.ref, right.ref)
+    def unary(self, op: BinaryenOp, value: Expression) -> Expression:
+        ref = lib.BinaryenUnary(self.ref, op, value.ref)
         return Expression(ref)
 
     def binary(self, op: BinaryenOp, left: Expression, right: Expression) -> Expression:
@@ -191,7 +204,7 @@ class Module:
         results: BinaryenType | None,
         var_types: list[BinaryenType] | None,
         body: Expression,
-    ) -> None:
+    ):
         if var_types is None or (len(var_types) == 0):
             length = 0
             c_var_types = _none_to_null(var_types)
@@ -199,7 +212,7 @@ class Module:
             length = len(var_types)
             c_var_types = var_types
 
-        return lib.BinaryenAddFunction(
+        ref = lib.BinaryenAddFunction(
             self.ref,
             name,
             _none_to_binaryen(params),
@@ -208,6 +221,21 @@ class Module:
             length,
             body.ref,
         )
+        return FunctionRef(ref)
+    
+    def get_function(self, name: bytes) -> FunctionRef:
+        ref = lib.BinaryenGetFunction(self.ref, name)
+        return FunctionRef(ref)
+    
+    def remove_function(self, name: bytes) -> None:
+        lib.BinaryenRemoveFunction(self.ref, name)
+    
+    def get_num_functions(self) -> int:
+        return lib.BinaryenGetNumFunctions(self.ref)
+    
+    def get_function_by_index(self, index: int):
+        ref = lib.BinaryenGetFunctionByIndex(self.ref, index)
+        return FunctionRef(ref)
 
     def call(
         self,
@@ -220,8 +248,11 @@ class Module:
             self.ref, target, operand_refs, len(operand_refs), return_type
         )
         return Expression(ref)
+    
+    def auto_drop(self):
+        lib.BinaryenModuleAutoDrop(self.ref)
 
-    def set_memory():
+    def set_memory(self):
         raise NotImplementedError
 
     def add_function_export(
@@ -274,11 +305,11 @@ class Module:
         return binary
 
     def write_text(self, filename: str):
-        with open(filename, "x", encoding="utf-8") as file:
+        with open(filename, "w", encoding="utf-8") as file:
             text = self.emit_text()
             file.write(text)
 
     def write_binary(self, filename: str):
-        with open(filename, "xb") as file:
+        with open(filename, "wb") as file:
             binary = self.emit_binary()
             file.write(binary)

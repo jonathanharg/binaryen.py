@@ -30,4 +30,4 @@ mkdocs serve
 
 ## Build cffi
 
-Build the cffi interface by running `python binaryen/libbinaryen/binaryen_build.py`
+Build the cffi interface by running `python binaryen/libbinaryen/build.py`

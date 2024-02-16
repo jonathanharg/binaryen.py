@@ -7,7 +7,7 @@ name = "binaryen.py"
 description = "A Python wrapper for Binaryen"
 license = { file = "LICENSE" }
 authors = [{ name = "Jonathan Hargreaves", email = "jhargreaves189@gmail.com" }]
-requires-python = ">=3.11"
+# requires-python = ">=3.11"
 readme = "README.md"
 keywords = ["WebAssembly", "WASM", "binaryen", "binaryen.py"]
 classifiers = [
@@ -32,3 +32,5 @@ dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = ["black", "isort", "mkdocs", "pytest"]
+
+# TODO: Requires cffi

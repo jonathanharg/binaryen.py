@@ -1,5 +1,5 @@
-from .module import Module
-from .expression import Expression, Block
-from .functionref import FunctionRef
+from .__module import Module
+from .__expression import Expression, Block
+from .__functionref import FunctionRef
 from . import operations, types, internals
-from .lib import *
+from .libbinaryen.binaryen_cffi import lib, ffi

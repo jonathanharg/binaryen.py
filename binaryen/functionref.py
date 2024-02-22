@@ -1,4 +1,4 @@
-from .types import BinaryenType
+from .internals import BinaryenType
 from .lib import lib
 
 
@@ -13,7 +13,6 @@ class FunctionRef:
         return lib.BinaryenGetNumVars(self.ref)
 
     def get_var(self, index: int) -> BinaryenType:
-        # TODO Cast this somehow to an BinaryenType, this will return an integer
         return lib.BinaryenFunctionGetVar(self.ref, index)
 
     # def add_var(self, type: BinaryenType) -> int:

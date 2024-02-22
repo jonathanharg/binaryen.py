@@ -5,14 +5,13 @@ from typing import TypeVar, TypeAlias, Any
 from .functionref import FunctionRef
 
 from .lib import lib, ffi
-from .types import BinaryenType, BinaryenAuto, BinaryenNone, CData
-from .literals import none
+from .internals import BinaryenType, BinaryenAuto, BinaryenNone, CData
+from .types import none
 from .expression import Expression, Block
 
 T = TypeVar("T")
 
 BinaryenLiteral: TypeAlias = Any
-BinaryenOp: TypeAlias = Any
 BinaryenExportRef: TypeAlias = Any
 
 
@@ -144,7 +143,6 @@ class Module:
         ref = lib.BinaryenDrop(self.ref, value.ref)
         return Expression(ref)
 
-    # TODO: Come up with a better name for this
     def Return(self, value: Expression | None) -> Expression:
         expression_ref = getattr(value, "ref", None)
         result_ref = lib.BinaryenReturn(self.ref, _none_to_null(expression_ref))
@@ -169,12 +167,69 @@ class Module:
     # TODO: TupleMake, TupleExtract, Pop, I31New, I31Get
     # TODO: CallRef, ReftTest, RefCast, BrOn
     # TODO: StructNew, StructGet, StructSet
-    # TODO: ArrayNew, ArrayNewFixed, ArrayGet, ArraySet, ArrayLen, ArrayCopy
-    # TODO: StringNew, StringConst, StringMeasure, StringEncode, StringConcat, StringEq, StringAs, StringWTF8Advance, StringTWF16Get, StringIterNext, StringIterMove, StringSliceWTF, StringSliceIter
+    # TODO: ArrayNew
 
-    # NOTE: Done - expression getId to BlockRemoveChildAt
+    def array_new_fixed(self, heap_type: any, values: list[Expression]):
+        #TODO: Fix type
+        num_values = len(values)
+        value_refs = list(map(lambda x: x.ref, values))
+        ref = lib.BinaryenArrayNewFixed(self.ref, heap_type, value_refs, num_values)
+        return Expression(ref)
+
+    # TODO: ArrayGet, ArraySet, ArrayLen, ArrayCopy
+    # TODO: StringNew
+
+    def string_const(self, name: bytes) -> Expression:
+        ref = lib.BinaryenStringConst(self.ref, name)
+        return Expression(ref)
+
+
+    # TODO: StringMeasure, StringEncode, StringConcat, StringEq, StringAs, StringWTF8Advance, StringTWF16Get, StringIterNext, StringIterMove, StringSliceWTF, StringSliceIter
 
     # TODO: Carry on from here
+
+    # if_get_condition
+    # if_set_condition
+    # if_get_if_true
+    # if_set_if_true
+    # if_get_if_false
+    # if_set_if_false
+
+    # loop_get_name
+    # loop_set_name
+    # loop_get_body
+    # loop_set_body
+
+    # break_get_name
+    # break_set_name
+    # break_set_condition
+    # break_get_value
+    # break_set_value
+
+    # switch_get_num_names
+    # switch_get_name_at
+    # switch_set_name_at
+    # switch_append_name
+    # switch_insert_name_at
+    # switch_remove_name_at
+    # switch_get_default_name
+    # switch_set_default_name
+    # switch_get_condition
+    # switch_get_value
+    # switch_set_value
+
+    # call_get_target
+    # call_set_target
+
+    # call_get_num_operands
+    # call_get_operand_at
+    # call_set_operand_at
+    # call_append_operand
+    # call_insert_operand_at
+    # call_remove_operand_at
+    # call_is_return
+    # call_set_return
+
 
     # Imports
 

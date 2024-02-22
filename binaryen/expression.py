@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from .lib import lib
-from .types import BinaryenType
+from .internals import BinaryenType
 
 
 class Expression:

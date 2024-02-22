@@ -1,4 +1,6 @@
 import binaryen
+from binaryen.types import i32, none
+
 
 # Equivalent python function
 def add(x, y):
@@ -8,23 +10,23 @@ def add(x, y):
 myModule = binaryen.Module()
 myModule.add_function(
     b"add",
-    binaryen.types.create([binaryen.i32, binaryen.i32]),
-    binaryen.i32,
-    [binaryen.i32],
+    binaryen.types.create([i32, i32]),
+    i32,
+    [i32],
     myModule.block(
         None,
         [
             myModule.local_set(
                 2,
                 myModule.binary(
-                    binaryen.lib.BinaryenAddInt32(),
-                    myModule.local_get(0, binaryen.i32),
-                    myModule.local_get(1, binaryen.i32),
+                    binaryen.operations.AddInt32(),
+                    myModule.local_get(0, i32),
+                    myModule.local_get(1, i32),
                 ),
             ),
-            myModule.Return(myModule.local_get(2, binaryen.i32)),
+            myModule.Return(myModule.local_get(2, i32)),
         ],
-        binaryen.none,
+        none,
     ),
 )
 

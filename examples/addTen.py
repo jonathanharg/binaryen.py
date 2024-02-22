@@ -1,4 +1,6 @@
 import binaryen
+from binaryen.types import i32, none
+
 
 # Equivalent python function
 def addTen(x):
@@ -8,23 +10,23 @@ def addTen(x):
 myModule = binaryen.Module()
 myModule.add_function(
     b"addTen",
-    binaryen.i32,
-    binaryen.i32,
-    [binaryen.i32],
+    i32,
+    i32,
+    [i32],
     myModule.block(
         None,
         [
             myModule.local_set(
                 1,
                 myModule.binary(
-                    binaryen.lib.BinaryenAddInt32(),
-                    myModule.local_get(0, binaryen.i32),
-                    myModule.const(binaryen.lib.BinaryenLiteralInt32(10)),
+                    binaryen.operations.AddInt32(),
+                    myModule.local_get(0, i32),
+                    myModule.const(binaryen.literal.int32(10)),
                 ),
             ),
-            myModule.Return(myModule.local_get(1, binaryen.i32)),
+            myModule.Return(myModule.local_get(1, i32)),
         ],
-        binaryen.none,
+        none,
     ),
 )
 
@@ -34,6 +36,8 @@ if not myModule.validate():
 myModule.add_function_export(b"addTen", b"addTen")
 
 myModule.optimize()
+
+myModule.print()
 
 # Can either print with `myModule.print()` or write to file with `myModule.write_binary(__file__)`
 

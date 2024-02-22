@@ -2,16 +2,15 @@
 
 from typing import TypeVar, TypeAlias, Any
 
-from .functionref import FunctionRef
+from .__functionref import FunctionRef
 
-from .lib import lib, ffi
-from .internals import BinaryenType, BinaryenAuto, BinaryenNone, CData
+from .libbinaryen.binaryen_cffi import lib, ffi
+from .internals import BinaryenType, BinaryenAuto, BinaryenNone, CData, BinaryenLiteral, BinaryenOp
 from .types import none
-from .expression import Expression, Block
+from .__expression import Expression, Block
 
 T = TypeVar("T")
 
-BinaryenLiteral: TypeAlias = Any
 BinaryenExportRef: TypeAlias = Any
 
 
@@ -235,17 +234,17 @@ class Module:
 
     def add_function_import(
         self,
-        internalName: bytes,
-        externalModuleName: bytes,
-        externalBaseName: bytes,
+        internal_name: bytes,
+        external_module_name: bytes,
+        external_base_name: bytes,
         params: BinaryenType,
         results: BinaryenType,
     ) -> None:
         lib.BinaryenAddFunctionImport(
             self.ref,
-            internalName,
-            externalModuleName,
-            externalBaseName,
+            internal_name,
+            external_module_name,
+            external_base_name,
             params,
             results,
         )
@@ -334,14 +333,6 @@ class Module:
 
     def emit_stack_ir(self, optimize: bool) -> str:
         text_ptr = lib.BinaryenModuleAllocateAndWriteStackIR(self.ref, optimize)
-        text_bytes = ffi.string(text_ptr)
-        text = text_bytes.decode("ascii")
-
-        # text_ptr is automatically freed by python garbage collector
-        return text
-
-    def emit_text(self) -> str:
-        text_ptr = lib.BinaryenModuleAllocateAndWriteText(self.ref)
         text_bytes = ffi.string(text_ptr)
         text = text_bytes.decode("ascii")
 

@@ -1,19 +1,19 @@
 import binaryen as b
+from binaryen.types import i32, none
 
-# mod.const(b.lib.BinaryenLiteralInt32(8)).ref
 mod = b.Module()
-mod.add_function_import(b"log", b"env", b"printf", b.i32, b.none)
+mod.add_function_import(b"log", b"env", b"printf", i32, none)
 mod.add_function(
     b"logi32",
     None,
     None,
-    [b.i32],
+    [i32],
     mod.block(
         None,
         [
-            mod.call(b"log", [mod.const(b.lib.BinaryenLiteralInt32(7))], b.none),
+            mod.call(b"log", [mod.const(b.literal.int32(7))], none),
         ],
-        b.none,
+        none,
     ),
 )
 mod.print()

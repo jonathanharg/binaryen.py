@@ -1,4 +1,6 @@
 import binaryen
+from binaryen.types import i32, none
+
 
 # Equivalent python function
 def fib(n):
@@ -11,53 +13,49 @@ def fib(n):
 myModule = binaryen.Module()
 myModule.add_function(
     b"fib",
-    binaryen.i32,
-    binaryen.i32,
+    i32,
+    i32,
     [],
     myModule.block(
         None,
         [
             myModule.If(
                 myModule.binary(
-                    binaryen.lib.BinaryenLeSInt32(),
-                    myModule.local_get(0, binaryen.i32),
-                    myModule.const(binaryen.lib.BinaryenLiteralInt32(1)),
+                    binaryen.operations.LeSInt32(),
+                    myModule.local_get(0, i32),
+                    myModule.const(binaryen.literal.int32(1)),
                 ),
-                myModule.Return(myModule.local_get(0, binaryen.i32)),
+                myModule.Return(myModule.local_get(0, i32)),
                 myModule.Return(
                     myModule.binary(
-                        binaryen.lib.BinaryenAddInt32(),
+                        binaryen.operations.AddInt32(),
                         myModule.call(
                             b"fib",
                             [
                                 myModule.binary(
-                                    binaryen.lib.BinaryenSubInt32(),
-                                    myModule.local_get(0, binaryen.i32),
-                                    myModule.const(
-                                        binaryen.lib.BinaryenLiteralInt32(1)
-                                    ),
+                                    binaryen.operations.SubInt32(),
+                                    myModule.local_get(0, i32),
+                                    myModule.const(binaryen.literal.int32(1)),
                                 )
                             ],
-                            binaryen.i32,
+                            i32,
                         ),
                         myModule.call(
                             b"fib",
                             [
                                 myModule.binary(
-                                    binaryen.lib.BinaryenSubInt32(),
-                                    myModule.local_get(0, binaryen.i32),
-                                    myModule.const(
-                                        binaryen.lib.BinaryenLiteralInt32(2)
-                                    ),
+                                    binaryen.operations.SubInt32(),
+                                    myModule.local_get(0, i32),
+                                    myModule.const(binaryen.literal.int32(2)),
                                 )
                             ],
-                            binaryen.i32,
+                            i32,
                         ),
                     )
                 ),
             )
         ],
-        binaryen.none,
+        none,
     ),
 )
 
@@ -67,6 +65,8 @@ if not myModule.validate():
 myModule.add_function_export(b"fib", b"fib")
 
 myModule.optimize()
+
+myModule.print()
 
 # Can either print with `myModule.print()` or write to file with `myModule.write_binary(__file__)`
 

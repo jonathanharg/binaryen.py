@@ -1,4 +1,5 @@
 import binaryen as b
+from binaryen.types import i32, none
 
 # mod.const(b.lib.BinaryenLiteralInt32(8)).ref
 
@@ -13,13 +14,10 @@ mod.add_function_import(
     b"print",
     b"wasi_unstable",
     b"fd_write",
-    b.types.create([b.i32, b.i32, b.i32, b.i32]),
-    b.i32,
+    b.types.create([i32, i32, i32, i32]),
+    i32,
 )
 # b.lib.BinaryenSetMemory(mod.ref,1,1,b"memory", [b"Hello WASM!\n"], [False], [b.NULL], [12], 1, False, False, b"wasmmemory")
-def const(x: int):
-    return mod.const(b.lib.BinaryenLiteralInt32(x))
-
 
 # s = b.ffi.new("char[]", b"Hello WASM!\n")
 # b.lib.BinaryenSetMemory(mod.ref,1,1,b"memory", [s],[False],[const(9).ref],[12], 1, False, False, b"wasmmemory")
@@ -28,38 +26,37 @@ def const(x: int):
 class Object(object):
     pass
 
+str_const = mod.string_const(b"Hello WASM!\n")
 
-str_const = Object()
-str_const.ref = b.lib.BinaryenStringConst(mod.ref, b"Hello WASM!\n")
+length = Object()
+length.ref = b.lib.BinaryenStringMeasure(
+            mod.ref, b.operations.StringMeasureUTF8(), str_const.ref
+        )
+
 # str_ptr = Object()
 # str_ptr.ref = b.lib.BinaryenStringNewGetPtr(str_const.ref)
 # str_length = Object()
 # str_length.ref = b.lib.BinaryenStringNewGetLength(str_const.ref)
-array = Object()
-array.ref = b.lib.BinaryenArrayNewFixed(
-    mod.ref,
+array = mod.array_new_fixed(
     b.lib.BinaryenHeapTypeArray(),
     [
-        const(0).ref,
-        const(1).ref,
-        const(2).ref,
-        b.lib.BinaryenStringMeasure(
-            mod.ref, b.lib.BinaryenStringMeasureUTF8(), str_const.ref
-        ),
+        mod.const(b.literal.int32(0)),
+        mod.const(b.literal.int32(1)),
+        mod.const(b.literal.int32(2)),
+        length,
     ],
-    4,
 )
-# test.ref = b.lib.BinaryenStore(mod.ref, 4, 0, 0, const(0).ref, const(9).ref, b.i32, b.NULL)
+# test.ref = b.lib.BinaryenStore(mod.ref, 4, 0, 0, const(0).ref, const(9).ref, i32, b.NULL)
 # test2 = Object()
-# test2.ref = b.lib.BinaryenStore(mod.ref, 4, 0, 2, const(4).ref, const(12).ref, b.i32, b.NULL)
-# call = mod.call(b"print", [const(1), const(0), const(1), const(20)], b.i32)
+# test2.ref = b.lib.BinaryenStore(mod.ref, 4, 0, 2, const(4).ref, const(12).ref, i32, b.NULL)
+# call = mod.call(b"print", [const(1), const(0), const(1), const(20)], i32)
 # drop = Object()
 # drop.ref = b.lib.BinaryenDrop(mod.ref, call.ref)
-# block = mod.block(b"test", [test, test2, call], b.none)
-block = mod.block(b"test", [str_const, array], b.none)
+# block = mod.block(b"test", [test, test2, call], none)
+block = mod.block(b"test", [str_const, array], none)
 func = mod.add_function(b"main", None, None, [], block)
-b.lib.BinaryenSetStart(mod.ref, func)
-b.lib.BinaryenModuleAutoDrop(mod.ref)
+b.lib.BinaryenSetStart(mod.ref, func.ref)
+mod.auto_drop()
 # mod.optimize()
 mod.validate()
 print("===============================")

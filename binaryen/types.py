@@ -1,46 +1,45 @@
 """Core Binaryen types"""
-from .lib import lib as _lib, ffi as _ffi
-from . import internals as _internals
-from typing import cast as _cast
+from .libbinaryen.binaryen_cffi import lib as __lib, ffi as __ffi
+from . import internals as __internals
+from typing import cast as __cast
 
 # THESE TYPES ARE STATIC AND NEVER CHANGE
 # We have to ignore the types here because the methods on lib are unknown
-none = _cast(_internals.BinaryenNone, _lib.BinaryenTypeNone())
-i32 = _cast(_internals.BinaryenInt32, _lib.BinaryenTypeInt32())
-i64 = _cast(_internals.BinaryenInt64, _lib.BinaryenTypeInt64())
-f32 = _cast(_internals.BinaryenFloat32, _lib.BinaryenTypeFloat32())
-f64 = _cast(_internals.BinaryenFloat64, _lib.BinaryenTypeFloat64())
-v128 = _cast(_internals.BinaryenVec128, _lib.BinaryenTypeVec128())
-funcref = _cast(_internals.BinaryenFuncref, _lib.BinaryenTypeFuncref())
-externref = _cast(_internals.BinaryenExternref, _lib.BinaryenTypeExternref())
-anyref = _cast(_internals.BinaryenAnyref, _lib.BinaryenTypeAnyref())
-eqref = _cast(_internals.BinaryenEqref, _lib.BinaryenTypeEqref())
-i31ref = _cast(_internals.BinaryenI31ref, _lib.BinaryenTypeI31ref())
-structref = _cast(_internals.BinaryenStructref, _lib.BinaryenTypeStructref())
-arrayref = _cast(_internals.BinaryenArrayref, _lib.BinaryenTypeArrayref())  # NOTE: Do we need this?
-stringref = _cast(_internals.BinaryenStringref, _lib.BinaryenTypeStringref())
-stringview_wtf8 = _cast(_internals.BinaryenStringviewWTF8, _lib.BinaryenTypeStringviewWTF8())
-stringview_wtf16 = _cast(_internals.BinaryenStringviewWTF16, _lib.BinaryenTypeStringviewWTF16())
-stringview_iter = _cast(_internals.BinaryenStringviewIter, _lib.BinaryenTypeStringviewIter())
-nullref = _cast(_internals.BinaryenNullref, _lib.BinaryenTypeNullref())
-nullexternref = _cast(_internals.BinaryenNullExternref, _lib.BinaryenTypeNullExternref())
-nullfuncref = _cast(_internals.BinaryenNullFuncref, _lib.BinaryenTypeNullFuncref())
-unreachable = _cast(_internals.BinaryenUnreachable, _lib.BinaryenTypeUnreachable())
-auto = _cast(_internals.BinaryenAuto, _lib.BinaryenTypeAuto())
+none = __cast(__internals.BinaryenNone, __lib.BinaryenTypeNone())
+i32 = __cast(__internals.BinaryenInt32, __lib.BinaryenTypeInt32())
+i64 = __cast(__internals.BinaryenInt64, __lib.BinaryenTypeInt64())
+f32 = __cast(__internals.BinaryenFloat32, __lib.BinaryenTypeFloat32())
+f64 = __cast(__internals.BinaryenFloat64, __lib.BinaryenTypeFloat64())
+v128 = __cast(__internals.BinaryenVec128, __lib.BinaryenTypeVec128())
+funcref = __cast(__internals.BinaryenFuncref, __lib.BinaryenTypeFuncref())
+externref = __cast(__internals.BinaryenExternref, __lib.BinaryenTypeExternref())
+anyref = __cast(__internals.BinaryenAnyref, __lib.BinaryenTypeAnyref())
+eqref = __cast(__internals.BinaryenEqref, __lib.BinaryenTypeEqref())
+i31ref = __cast(__internals.BinaryenI31ref, __lib.BinaryenTypeI31ref())
+structref = __cast(__internals.BinaryenStructref, __lib.BinaryenTypeStructref())
+arrayref = __cast(__internals.BinaryenArrayref, __lib.BinaryenTypeArrayref())  # NOTE: Do we need this?
+stringref = __cast(__internals.BinaryenStringref, __lib.BinaryenTypeStringref())
+stringview_wtf8 = __cast(__internals.BinaryenStringviewWTF8, __lib.BinaryenTypeStringviewWTF8())
+stringview_wtf16 = __cast(__internals.BinaryenStringviewWTF16, __lib.BinaryenTypeStringviewWTF16())
+stringview_iter = __cast(__internals.BinaryenStringviewIter, __lib.BinaryenTypeStringviewIter())
+nullref = __cast(__internals.BinaryenNullref, __lib.BinaryenTypeNullref())
+nullexternref = __cast(__internals.BinaryenNullExternref, __lib.BinaryenTypeNullExternref())
+nullfuncref = __cast(__internals.BinaryenNullFuncref, __lib.BinaryenTypeNullFuncref())
+unreachable = __cast(__internals.BinaryenUnreachable, __lib.BinaryenTypeUnreachable())
+auto = __cast(__internals.BinaryenAuto, __lib.BinaryenTypeAuto())
 
-NULL = _ffi.NULL
+NULL = __ffi.NULL
 
-
-def create(types: list[_internals.BinaryenType]) -> _internals.BinaryenType:
-    return _lib.BinaryenTypeCreate(types, len(types))
+def create(types: list[__internals.BinaryenType]) -> __internals.BinaryenType:
+    return __lib.BinaryenTypeCreate(types, len(types))
 
 
 # Number of arguments
-def arity(binaryen_type: _internals.BinaryenType) -> int:
-    return _lib.BinaryenTypeArity(binaryen_type)
+def arity(binaryen_type: __internals.BinaryenType) -> int:
+    return __lib.BinaryenTypeArity(binaryen_type)
 
 
-# TODO: _internals.BinaryenTypeExpand
+# TODO: BinaryenTypeExpand
 
 # TODO: BinaryenPackedType
 
@@ -53,8 +52,8 @@ def arity(binaryen_type: _internals.BinaryenType) -> int:
 # TODO: BinaryenHeapType
 
 
-def is_nullable(binaryen_type: _internals.BinaryenType) -> bool:
-    return _lib.BinaryenTypeIsNullable(binaryen_type)
+def is_nullable(binaryen_type: __internals.BinaryenType) -> bool:
+    return __lib.BinaryenTypeIsNullable(binaryen_type)
 
 
 # TODO: BinaryenTypeFromHeapType

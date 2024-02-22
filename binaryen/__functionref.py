@@ -1,5 +1,5 @@
 from .internals import BinaryenType
-from .lib import lib
+from .libbinaryen.binaryen_cffi import lib
 
 
 class FunctionRef:

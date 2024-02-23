@@ -5,8 +5,16 @@ from typing import TypeVar, TypeAlias, Any
 from .__functionref import FunctionRef
 
 from .libbinaryen.binaryen_cffi import lib, ffi
-from .internals import BinaryenType, BinaryenAuto, BinaryenNone, CData, BinaryenLiteral, BinaryenOp
+from .internals import (
+    BinaryenType,
+    BinaryenAuto,
+    BinaryenNone,
+    CData,
+    BinaryenLiteral,
+    BinaryenOp,
+)
 from .types import none
+from .__feature import Feature
 from .__expression import Expression, Block
 
 T = TypeVar("T")
@@ -76,16 +84,18 @@ class Module:
     ) -> Expression:
         ref = lib.BinaryenIf(self.ref, condition.ref, if_true.ref, if_false.ref)
         return Expression(ref)
-    
+
     def loop(self, label: bytes, body: Expression):
         ref = lib.BinaryenLoop(self.ref, label, body.ref)
         return Expression(ref)
 
-    def Break(self, name: bytes, condition: Expression | None, value: Expression | None):
+    def Break(
+        self, name: bytes, condition: Expression | None, value: Expression | None
+    ):
         condition_ref = ffi.NULL if condition is None else condition.ref
         value_ref = ffi.NULL if value is None else value.ref
 
-        ref = lib.BinaryenBreak(self.ref, name,condition_ref, value_ref)
+        ref = lib.BinaryenBreak(self.ref, name, condition_ref, value_ref)
         return Expression(ref)
 
     # TODO: Switch, Call, CallIndirect, ReturnCall, ReturnCallIndirect,
@@ -169,7 +179,7 @@ class Module:
     # TODO: ArrayNew
 
     def array_new_fixed(self, heap_type: any, values: list[Expression]):
-        #TODO: Fix type
+        # TODO: Fix type
         num_values = len(values)
         value_refs = list(map(lambda x: x.ref, values))
         ref = lib.BinaryenArrayNewFixed(self.ref, heap_type, value_refs, num_values)
@@ -181,7 +191,6 @@ class Module:
     def string_const(self, name: bytes) -> Expression:
         ref = lib.BinaryenStringConst(self.ref, name)
         return Expression(ref)
-
 
     # TODO: StringMeasure, StringEncode, StringConcat, StringEq, StringAs, StringWTF8Advance, StringTWF16Get, StringIterNext, StringIterMove, StringSliceWTF, StringSliceIter
 
@@ -229,7 +238,6 @@ class Module:
     # call_is_return
     # call_set_return
 
-
     # Imports
 
     def add_function_import(
@@ -276,17 +284,17 @@ class Module:
             body.ref,
         )
         return FunctionRef(ref)
-    
+
     def get_function(self, name: bytes) -> FunctionRef:
         ref = lib.BinaryenGetFunction(self.ref, name)
         return FunctionRef(ref)
-    
+
     def remove_function(self, name: bytes) -> None:
         lib.BinaryenRemoveFunction(self.ref, name)
-    
+
     def get_num_functions(self) -> int:
         return lib.BinaryenGetNumFunctions(self.ref)
-    
+
     def get_function_by_index(self, index: int):
         ref = lib.BinaryenGetFunctionByIndex(self.ref, index)
         return FunctionRef(ref)
@@ -302,12 +310,46 @@ class Module:
             self.ref, target, operand_refs, len(operand_refs), return_type
         )
         return Expression(ref)
-    
+
     def auto_drop(self):
         lib.BinaryenModuleAutoDrop(self.ref)
 
-    def set_memory(self):
-        raise NotImplementedError
+    def set_memory(
+        self,
+        initial: int,
+        maximum: int,
+        export_name: bytes,
+        segments: list[bytes],
+        segment_passive: bool,
+        segment_offsets: Expression,
+        segment_sizes: list[int],
+        shared: bool,
+        memory64: bool,
+        name: bytes,
+    ):
+        if len(segment_sizes) != len(segments):
+            raise RuntimeError("Segment sizes do not match")
+        lib.BinaryenSetMemory(
+            self.ref,
+            initial,
+            maximum,
+            export_name,
+            segments,
+            segment_passive,
+            segment_offsets.ref,
+            segment_sizes,
+            len(segments),
+            shared,
+            memory64,
+            name,
+        )
+
+    def get_features(self):
+        bit_flags = lib.BinaryenModuleGetFeatures(self.ref)
+        return Feature(bit_flags)
+
+    def set_feature(self, feature: Feature):
+        lib.BinaryenModuleSetFeatures(self.ref, feature.value)
 
     def add_function_export(
         self, internal_name: bytes, external_name: bytes

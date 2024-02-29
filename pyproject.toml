@@ -28,9 +28,6 @@ license = { file = "LICENSE" }
 requires-python = ">=3.12"
 dependencies = ['cffi >= 1.15.0']
 
-[tool.setuptools.packages.find]
-exclude = ["examples*", "scripts*"]
-
 [project.urls]
 "Source Code" = "https://github.com/jonathanharg/binaryen.py"
 Issues = "https://github.com/jonathanharg/binaryen.py/issues"

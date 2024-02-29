@@ -1,10 +1,10 @@
-import os
 import re
 import subprocess
+from pathlib import Path
 
-curr_dir = os.path.dirname(__file__)
-header_path = os.path.join(curr_dir, "./binaryen-c.h")
-output_path = os.path.join(curr_dir, "./binaryen-c.c")
+lib_dir = (Path(__file__).parent.parent / "./binaryen/libbinaryen/")
+header_path = (lib_dir /"./binaryen-c.h")
+output_path =(lib_dir / "./binaryen-c.c")
 
 # Note: manually replace unions with the largest type (uint8_t v128[16];)
 
@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
     # Run the C pre-processor on the Binaryen header file
     pre_processor = subprocess.run(
-        ["cpp", "-nostdinc", "-E", "-P", f"-I{curr_dir}"],
+        ["cpp", "-nostdinc", "-E", "-P", f"-I{lib_dir}"],
         input=header.encode("utf-8"),
         check=True,
         stdout=subprocess.PIPE,

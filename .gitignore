@@ -1,8 +1,9 @@
 .vscode
 .DS_Store
 
-binaryen/_binaryen.py
 binaryen/TODO.h
+binaryen/libbinaryen/*
+binaryen/_binaryen.*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

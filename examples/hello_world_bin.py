@@ -1,5 +1,5 @@
 import binaryen as b
-from binaryen.types import NULL, i32, none
+from binaryen.types import NULL, Int32, TypeNone
 
 mod = b.Module()
 mod.set_feature(b.Feature.Strings | b.Feature.GC | b.Feature.ReferenceTypes)
@@ -7,8 +7,8 @@ mod.add_function_import(
     b"print",
     b"wasi_snapshot_preview1",
     b"fd_write",
-    b.types.create([i32, i32, i32, i32]),
-    i32,
+    b.types.create([Int32, Int32, Int32, Int32]),
+    Int32,
 )
 
 
@@ -67,7 +67,7 @@ mod.set_memory(
 
 str_const = mod.string_const(b"Hello Wasm GC!\n")
 str_loc = mod.local_set(0, str_const)
-str_get = mod.local_get(0, i32)
+str_get = mod.local_get(0, Int32)
 leng_ref = b.lib.BinaryenStringMeasure(
     mod.ref, b.operations.StringMeasureUTF8(), str_get.ref
 )
@@ -75,9 +75,9 @@ leng = b.Expression(leng_ref)
 
 # Pointer to start of string and length of string
 # string_pointer = mod.store(4, 0, 0, mod.i32(0), mod.i32(8), i32, NULL)
-string_pointer = mod.store(4, 0, 0, mod.i32(0), mod.i32(8), i32, NULL)
+string_pointer = mod.store(4, 0, 0, mod.i32(0), mod.i32(8), Int32, NULL)
 # string_length = mod.store(4,0,2,mod.i32(4), mod.i32(12), i32, NULL)
-string_length = mod.store(4, 0, 2, mod.i32(4), leng, i32, NULL)
+string_length = mod.store(4, 0, 2, mod.i32(4), leng, Int32, NULL)
 # | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 |
 #  [      8      ] [      12     ]  H   e   l    l    o    \    W    a    s    m    !    \n   \0
 
@@ -86,9 +86,9 @@ string_length = mod.store(4, 0, 2, mod.i32(4), leng, i32, NULL)
 # - *iovs - The pointer to the iov array, which is stored at memory location 0
 # - iovs_len - We're printing 1 string stored in an iov - so one.
 # - nwritten - A place in memory to store the number of bytes written
-call = mod.call(b"print", [mod.i32(1), mod.i32(0), mod.i32(1), mod.i32(20)], i32)
+call = mod.call(b"print", [mod.i32(1), mod.i32(0), mod.i32(1), mod.i32(20)], Int32)
 # block = mod.block(b"test", [string_pointer, string_length, call], none)
-block = mod.block(b"test", [str_loc, string_pointer, string_length, call], none)
+block = mod.block(b"test", [str_loc, string_pointer, string_length, call], TypeNone)
 func = mod.add_function(b"main", None, None, [], block)
 
 

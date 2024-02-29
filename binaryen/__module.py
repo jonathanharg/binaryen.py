@@ -2,26 +2,28 @@
 
 from typing import Any
 
+from .internals import BinaryenType
+
 from . import literal
 from .__expression import Block, Expression
 from .__feature import Feature
 from .__functionref import FunctionRef
-from .internals import Auto, CData, Literal, Op, Type, BinaryenNone
 from .binaryen_lib import ffi, lib
-from .types import none
+from .types import TypeNone
+from .internals import BinaryenLiteral, BinaryenOp
 
 type BinaryenExportRef = Any
 
 
-def _none_to_null[T](possibly_none: T | None) -> CData | T:
+def _none_to_null[T](possibly_none: T | None) -> ffi.CData | T:
     if possibly_none is None:
         return ffi.NULL
     return possibly_none
 
 
-def _none_to_binaryen[T](possibly_none: T | None) -> BinaryenNone | T:
+def _none_to_binaryen(possibly_none: BinaryenType | None) -> BinaryenType:
     if possibly_none is None:
-        return none
+        return TypeNone
     return possibly_none
 
 
@@ -66,7 +68,7 @@ class Module:
         self,
         name: bytes | None,
         children: list[Expression],
-        binaryen_type: Type | Auto,
+        binaryen_type: BinaryenType,
     ) -> Block:
         # Convert children object list to list of children pointers
         children_refs = list(map(lambda x: x.ref, children))
@@ -103,7 +105,7 @@ class Module:
 
     # TODO: Switch, Call, CallIndirect, ReturnCall, ReturnCallIndirect,
 
-    def local_get(self, index: int, local_type: Type) -> Expression:
+    def local_get(self, index: int, local_type: BinaryenType) -> Expression:
         ref = lib.BinaryenLocalGet(self.ref, index, local_type)
         return Expression(ref)
 
@@ -111,11 +113,11 @@ class Module:
         ref = lib.BinaryenLocalSet(self.ref, index, value.ref)
         return Expression(ref)
 
-    def local_tee(self, index: int, value: Expression, value_type: Type) -> Expression:
+    def local_tee(self, index: int, value: Expression, value_type: BinaryenType) -> Expression:
         ref = lib.BinaryenLocalTee(self.ref, index, value.ref, value_type)
         return Expression(ref)
 
-    def global_get(self, name: bytes, global_type: Type) -> Expression:
+    def global_get(self, name: bytes, global_type: BinaryenType) -> Expression:
         ref = lib.BinaryenGlobalGet(self.ref, name, global_type)
         return Expression(ref)
 
@@ -128,7 +130,7 @@ class Module:
         signed: bool,
         offset: int,
         align: int,
-        load_type: Type,
+        load_type: BinaryenType,
         ptr: Expression,
         memory_name: bytes,
     ) -> Expression:
@@ -144,7 +146,7 @@ class Module:
         align: int,
         ptr: Expression,
         value: Expression,
-        store_type: Type,
+        store_type: BinaryenType,
         memory_name: bytes,
     ) -> Expression:
         ref = lib.BinaryenStore(
@@ -159,15 +161,15 @@ class Module:
         )
         return Expression(ref)
 
-    def const(self, value: Literal) -> Expression:
+    def const(self, value: BinaryenLiteral) -> Expression:
         ref = lib.BinaryenConst(self.ref, value)
         return Expression(ref)
 
-    def unary(self, op: Op, value: Expression) -> Expression:
+    def unary(self, op: BinaryenOp, value: Expression) -> Expression:
         ref = lib.BinaryenUnary(self.ref, op, value.ref)
         return Expression(ref)
 
-    def binary(self, op: Op, left: Expression, right: Expression) -> Expression:
+    def binary(self, op: BinaryenOp, left: Expression, right: Expression) -> Expression:
         ref = lib.BinaryenBinary(self.ref, op, left.ref, right.ref)
         return Expression(ref)
 
@@ -176,7 +178,7 @@ class Module:
         condition: Expression,
         if_true: Expression,
         if_false: Expression,
-        select_type: Type,
+        select_type: BinaryenType,
     ) -> Expression:
         ref = lib.BinaryenSelect(
             self.ref, condition.ref, if_true.ref, if_false.ref, select_type
@@ -280,8 +282,8 @@ class Module:
         internal_name: bytes,
         external_module_name: bytes,
         external_base_name: bytes,
-        params: Type,
-        results: Type,
+        params: BinaryenType,
+        results: BinaryenType,
     ) -> None:
         lib.BinaryenAddFunctionImport(
             self.ref,
@@ -297,9 +299,9 @@ class Module:
     def add_function(
         self,
         name: bytes,
-        params: Type | None,
-        results: Type | None,
-        var_types: list[Type] | None,
+        params: BinaryenType | None,
+        results: BinaryenType | None,
+        var_types: list[BinaryenType] | None,
         body: Expression,
     ):
         if var_types is None or (len(var_types) == 0):
@@ -338,7 +340,7 @@ class Module:
         self,
         target: bytes,
         operands: list[Expression],
-        return_type: Type,
+        return_type: BinaryenType,
     ) -> Expression:
         operand_refs = list(map(lambda x: x.ref, operands))
         ref = lib.BinaryenCall(

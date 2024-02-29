@@ -1,5 +1,5 @@
 import binaryen
-from binaryen.types import i32, none
+from binaryen.types import Int32, TypeNone
 
 
 # Equivalent python function
@@ -10,9 +10,9 @@ def addTen(x):
 myModule = binaryen.Module()
 myModule.add_function(
     b"addTen",
-    i32,
-    i32,
-    [i32],
+    Int32,
+    Int32,
+    [Int32],
     myModule.block(
         None,
         [
@@ -20,13 +20,13 @@ myModule.add_function(
                 1,
                 myModule.binary(
                     binaryen.operations.AddInt32(),
-                    myModule.local_get(0, i32),
+                    myModule.local_get(0, Int32),
                     myModule.i32(10),
                 ),
             ),
-            myModule.Return(myModule.local_get(1, i32)),
+            myModule.Return(myModule.local_get(1, Int32)),
         ],
-        none,
+        TypeNone,
     ),
 )
 

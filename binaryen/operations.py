@@ -1,4 +1,4 @@
-from .internals import Op as __Op
+from .internals import BinaryenOp as __Op
 from .binaryen_lib import lib as __lib
 
 # Vim Macro

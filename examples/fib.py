@@ -1,5 +1,5 @@
 import binaryen
-from binaryen.types import i32, none
+from binaryen.types import Int32, TypeNone
 
 
 # Equivalent python function
@@ -13,8 +13,8 @@ def fib(n):
 myModule = binaryen.Module()
 myModule.add_function(
     b"fib",
-    i32,
-    i32,
+    Int32,
+    Int32,
     [],
     myModule.block(
         None,
@@ -22,10 +22,10 @@ myModule.add_function(
             myModule.If(
                 myModule.binary(
                     binaryen.operations.LeSInt32(),
-                    myModule.local_get(0, i32),
+                    myModule.local_get(0, Int32),
                     myModule.i32(1),
                 ),
-                myModule.Return(myModule.local_get(0, i32)),
+                myModule.Return(myModule.local_get(0, Int32)),
                 myModule.Return(
                     myModule.binary(
                         binaryen.operations.AddInt32(),
@@ -34,28 +34,28 @@ myModule.add_function(
                             [
                                 myModule.binary(
                                     binaryen.operations.SubInt32(),
-                                    myModule.local_get(0, i32),
+                                    myModule.local_get(0, Int32),
                                     myModule.i32(1),
                                 )
                             ],
-                            i32,
+                            Int32,
                         ),
                         myModule.call(
                             b"fib",
                             [
                                 myModule.binary(
                                     binaryen.operations.SubInt32(),
-                                    myModule.local_get(0, i32),
+                                    myModule.local_get(0, Int32),
                                     myModule.const(binaryen.literal.int32(2)),
                                 )
                             ],
-                            i32,
+                            Int32,
                         ),
                     )
                 ),
             )
         ],
-        none,
+        TypeNone,
     ),
 )
 

@@ -6,6 +6,8 @@ curr_dir = os.path.dirname(__file__)
 header_path = os.path.join(curr_dir, "./binaryen-c.h")
 output_path = os.path.join(curr_dir, "./binaryen-c.c")
 
+# Note: manually replace unions with the largest type (uint8_t v128[16];)
+
 if __name__ == "__main__":
     header = open(header_path, "r", encoding="utf-8").read()
 

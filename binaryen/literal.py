@@ -1,5 +1,5 @@
-from .internals import Literal as __Literal
 from .binaryen_lib import lib as __lib
+from .internals import BinaryenLiteral as __Literal
 
 
 def int32(x: int) -> __Literal:

@@ -1,6 +1,0 @@
-exclude binaryen/libbinaryen/binaryen-c.h
-exclude binaryen/libbinaryen/wasm-delegations.def
-
-include binaryen/libbinaryen/*.so
-include binaryen/libbinaryen/*.lib
-include binaryen/libbinaryen/*.a

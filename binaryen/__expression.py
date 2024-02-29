@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .binaryen_lib import lib
+from ._binaryen import lib
 from .internals import BinaryenExpressionId, BinaryenType
 
 

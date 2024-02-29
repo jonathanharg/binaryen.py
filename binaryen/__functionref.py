@@ -1,4 +1,4 @@
-from .binaryen_lib import lib
+from ._binaryen import lib
 from .internals import BinaryenType
 
 

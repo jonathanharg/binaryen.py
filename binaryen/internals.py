@@ -3,8 +3,8 @@ from typing import TypeAlias as __TypeAlias
 from typing import Union as __Union
 from typing import final as __final
 
-from .binaryen_lib import ffi as __ffi
-from .binaryen_lib import lib as __lib
+from ._binaryen import ffi as __ffi
+from ._binaryen import lib as __lib
 
 
 # Empty type, under the hood all Binaryen types are integers

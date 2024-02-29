@@ -1,5 +1,5 @@
 from .. import internals as __internals
-from ..binaryen_lib import lib as __lib
+from .._binaryen import lib as __lib
 
 
 def get_params(heap_type: __internals.BinaryenHeapType) -> __internals.BinaryenType:

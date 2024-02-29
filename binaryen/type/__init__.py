@@ -3,8 +3,8 @@
 from typing import cast as __cast
 
 from .. import internals as __internals
-from ..binaryen_lib import ffi as __ffi
-from ..binaryen_lib import lib as __lib
+from .._binaryen import ffi as __ffi
+from .._binaryen import lib as __lib
 from . import array_type, heap_type, struct_type, signature_type
 
 # These "types" are actually integers representing the type

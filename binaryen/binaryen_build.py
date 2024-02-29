@@ -1,5 +1,6 @@
 import cffi
 import os
+import platform
 from pathlib import Path
 
 root_path = os.environ["BINARYEN_PY_ROOT"]
@@ -19,11 +20,27 @@ if not cdef_path.is_file():
 
 lib_path = str(lib_path)
 
-print("LIB PATH IS", lib_path)
+lib_name = ""
+
+if platform.system() == "Linux":
+    if platform.machine() == "aarch64":
+        lib_name = "linux-aarch64"
+    else:
+        lib_name = "linux-x86_64"
+
+if platform.system() == "Windows":
+    lib_name = "windows-x86_64"
+
+if platform.system() == "Darwin":
+    if platform.machine() == "arm64":
+        # lib_name = "macos-arm64"
+        lib_name = "binaryen"
+    else:
+        lib_name = "macos-x86_64"
 
 ffibuilder = cffi.FFI()
 # Supports windows for now
-ffibuilder.set_source("binaryen._binaryen", "#include \"binaryen-c.h\"", libraries=["windows-x86_64"], library_dirs=[lib_path], include_dirs=[lib_path])
+ffibuilder.set_source("binaryen._binaryen", "#include \"binaryen-c.h\"", libraries=[lib_name], library_dirs=[lib_path], include_dirs=[lib_path])
 
 with open(cdef_path, "r", encoding="utf-8") as file:
     cdef = file.read()

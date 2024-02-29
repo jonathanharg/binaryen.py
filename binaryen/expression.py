@@ -1,6 +1,6 @@
 from typing import cast as __cast
 
-from .binaryen_lib import lib as __lib
+from ._binaryen import lib as __lib
 from .internals import BinaryenExpressionId as __BinaryenExpressionId
 
 InvalidId = __cast(__BinaryenExpressionId, __lib.BinaryenInvalidId())

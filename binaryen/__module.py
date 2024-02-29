@@ -6,7 +6,7 @@ from . import literal
 from .__expression import Block, Expression
 from .__feature import Feature
 from .__functionref import FunctionRef
-from .binaryen_lib import ffi, lib
+from ._binaryen import ffi, lib
 from .internals import BinaryenHeapType, BinaryenLiteral, BinaryenOp, BinaryenType
 from .type import TypeNone
 

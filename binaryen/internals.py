@@ -3,8 +3,8 @@ from typing import TypeAlias as __TypeAlias
 from typing import Union as __Union
 from typing import final as __final
 
-from .libbinaryen.binaryen_cffi import ffi as __ffi
-from .libbinaryen.binaryen_cffi import lib as __lib
+from .binaryen_lib import ffi as __ffi
+from .binaryen_lib import lib as __lib
 
 CData: __TypeAlias = __ffi.CData
 
@@ -17,7 +17,7 @@ class __BaseType:
     pass
 
 
-none = __NewType("none", __BaseType)
+BinaryenNone = __NewType("BinaryenNone", __BaseType)
 Int32 = __NewType("Int32", __BaseType)
 Int64 = __NewType("Int64", __BaseType)
 Float32 = __NewType("Float32", __BaseType)
@@ -46,7 +46,7 @@ reftype = __Union[Funcref, Externref]
 
 
 Type: __TypeAlias = __Union[
-    none,
+    BinaryenNone,
     Int32,
     Int64,
     Float32,

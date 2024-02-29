@@ -1,5 +1,5 @@
 from .internals import Op as __Op
-from .libbinaryen.binaryen_cffi import lib as __lib
+from .binaryen_lib import lib as __lib
 
 # Vim Macro
 # 8ly$0iTabreturn __lib.EscOdef EscpA:EscjoEscj0

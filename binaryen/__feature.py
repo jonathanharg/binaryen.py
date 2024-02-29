@@ -1,6 +1,6 @@
 from enum import Flag
 
-from .libbinaryen.binaryen_cffi import lib
+from .binaryen_lib import lib
 
 
 class Feature(Flag):

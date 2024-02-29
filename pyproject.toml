@@ -1,15 +1,14 @@
 [build-system]
-requires = ["setuptools>=60", "setuptools-scm>=8.0"]
+requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "binaryen.py"
+version = "117.0.0"
 description = "A Python wrapper for Binaryen"
-license = { file = "LICENSE" }
 authors = [{ name = "Jonathan Hargreaves", email = "jhargreaves189@gmail.com" }]
-# requires-python = ">=3.11"
 readme = "README.md"
-keywords = ["WebAssembly", "Wasm", "binaryen", "binaryen.py"]
+keywords = ["WebAssembly", "Wasm", "Binaryen", "binaryen.py"]
 classifiers = [
     "Environment :: MacOS X",
     "Environment :: WebAssembly",
@@ -25,12 +24,15 @@ classifiers = [
     "Programming Language :: Python",
     "Topic :: Software Development :: Compilers",
 ]
-dependencies = ['cffi >= 1.15.1']
-dynamic = ["version"]
+license = { file = "LICENSE" }
+requires-python = ">=3.12"
+dependencies = ['cffi >= 1.16.0']
 
-[tool.setuptools_scm]
+[project.urls]
+"Source Code" = "https://github.com/jonathanharg/binaryen.py"
+Issues = "https://github.com/jonathanharg/binaryen.py/issues"
+Changelog = "https://github.com/jonathanharg/binaryen.py/blob/main/CHANGELOG.md" 
+"Original Source Code" = "https://github.com/WebAssembly/binaryen"
 
 [project.optional-dependencies]
 dev = ["black", "isort", "mkdocs", "pytest"]
-
-# TODO: Requires cffi, setuptools

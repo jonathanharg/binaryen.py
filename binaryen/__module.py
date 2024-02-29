@@ -1,27 +1,25 @@
 """Binaryen representation of WebAssembly modules"""
 
-from typing import Any, TypeAlias, TypeVar
+from typing import Any
 
 from . import literal
 from .__expression import Block, Expression
 from .__feature import Feature
 from .__functionref import FunctionRef
-from .internals import Auto, CData, Literal, Op, Type, none
-from .libbinaryen.binaryen_cffi import ffi, lib
+from .internals import Auto, CData, Literal, Op, Type, BinaryenNone
+from .binaryen_lib import ffi, lib
 from .types import none
 
-T = TypeVar("T")
-
-BinaryenExportRef: TypeAlias = Any
+type BinaryenExportRef = Any
 
 
-def _none_to_null(possibly_none: T | None) -> CData | T:
+def _none_to_null[T](possibly_none: T | None) -> CData | T:
     if possibly_none is None:
         return ffi.NULL
     return possibly_none
 
 
-def _none_to_binaryen(possibly_none: T | None) -> none | T:
+def _none_to_binaryen[T](possibly_none: T | None) -> BinaryenNone | T:
     if possibly_none is None:
         return none
     return possibly_none

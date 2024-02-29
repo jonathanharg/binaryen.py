@@ -1,3 +1,0 @@
-[submodule "binaryen/libbinaryen/binaryen"]
-	path = binaryen/libbinaryen/binaryen
-	url = git@github.com:WebAssembly/binaryen.git

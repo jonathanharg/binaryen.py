@@ -3,12 +3,14 @@
 from typing import cast as __cast
 
 from . import internals as __internals
-from .libbinaryen.binaryen_cffi import ffi as __ffi
-from .libbinaryen.binaryen_cffi import lib as __lib
+from .binaryen_lib import ffi as __ffi
+from .binaryen_lib import lib as __lib
 
-# THESE TYPES ARE STATIC AND NEVER CHANGE
-# We have to ignore the types here because the methods on lib are unknown
-none = __cast(__internals.none, __lib.BinaryenTypeNone())
+# These "types" are actually integers representing the type
+# e.g. none = 0, i32 = 2 etc.
+# We cast these integers ("types") to python types which are actually just an empty class
+# see internals.py
+none = __cast(__internals.BinaryenNone, __lib.BinaryenTypeNone())
 i32 = __cast(__internals.Int32, __lib.BinaryenTypeInt32())
 i64 = __cast(__internals.Int64, __lib.BinaryenTypeInt64())
 f32 = __cast(__internals.Float32, __lib.BinaryenTypeFloat32())
@@ -22,7 +24,7 @@ i31ref = __cast(__internals.I31ref, __lib.BinaryenTypeI31ref())
 structref = __cast(__internals.Structref, __lib.BinaryenTypeStructref())
 arrayref = __cast(
     __internals.Arrayref, __lib.BinaryenTypeArrayref()
-)  # NOTE: Do we need this?
+)
 stringref = __cast(__internals.Stringref, __lib.BinaryenTypeStringref())
 stringview_wtf8 = __cast(__internals.StringviewWTF8, __lib.BinaryenTypeStringviewWTF8())
 stringview_wtf16 = __cast(
@@ -34,9 +36,6 @@ nullexternref = __cast(__internals.NullExternref, __lib.BinaryenTypeNullExternre
 nullfuncref = __cast(__internals.NullFuncref, __lib.BinaryenTypeNullFuncref())
 unreachable = __cast(__internals.Unreachable, __lib.BinaryenTypeUnreachable())
 auto = __cast(__internals.Auto, __lib.BinaryenTypeAuto())
-
-NULL = __ffi.NULL
-
 
 def create(types: list[__internals.Type]) -> __internals.Type:
     return __lib.BinaryenTypeCreate(types, len(types))

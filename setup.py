@@ -7,8 +7,7 @@ from setuptools import find_packages, setup
 #     # cffi_modules=["binaryen/libbinaryen/build.py:ffibuilder"],
 # )
 setup(
-    ...,
-    setup_requires=["cffi>=1.16.1"],
-    cffi_modules=["binaryen/libbinaryen/build.py:ffibuilder"],
-    install_requires=["cffi>=1.16.1"],
+    setup_requires=["cffi>=1.16.0"],
+    cffi_modules=["binaryen/binaryen_build.py:ffibuilder"],
+    install_requires=["cffi>=1.16.0"],
 )

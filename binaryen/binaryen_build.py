@@ -21,8 +21,7 @@ if not cdef_path.is_file():
 lib_path = str(lib_path)
 
 ffibuilder = cffi.FFI()
-# Supports windows for now
-ffibuilder.set_source("binaryen._binaryen", "#include \"binaryen-c.h\"", libraries=["binaryen"], library_dirs=[lib_path], include_dirs=[lib_path])
+ffibuilder.set_source("binaryen._binaryen", "#include \"binaryen-c.h\"", libraries=["binaryen"], library_dirs=[lib_path], include_dirs=[lib_path], language="c++")
 
 with open(cdef_path, "r", encoding="utf-8") as file:
     cdef = file.read()

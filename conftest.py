@@ -1,5 +1,6 @@
-import binaryen
 import pytest
+
+import binaryen
 
 
 @pytest.fixture(autouse=True)

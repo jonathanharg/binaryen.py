@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from .libbinaryen.binaryen_cffi import lib
 from .internals import Type
+from .libbinaryen.binaryen_cffi import lib
 
 
 class Expression:

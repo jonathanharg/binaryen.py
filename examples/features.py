@@ -1,5 +1,4 @@
-from binaryen import Module, Feature
-
+from binaryen import Feature, Module
 
 myModule = Module()
 print(myModule.get_features())

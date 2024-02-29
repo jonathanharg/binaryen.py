@@ -1,7 +1,10 @@
 """Core Binaryen types"""
-from .libbinaryen.binaryen_cffi import lib as __lib, ffi as __ffi
-from . import internals as __internals
+
 from typing import cast as __cast
+
+from . import internals as __internals
+from .libbinaryen.binaryen_cffi import ffi as __ffi
+from .libbinaryen.binaryen_cffi import lib as __lib
 
 # THESE TYPES ARE STATIC AND NEVER CHANGE
 # We have to ignore the types here because the methods on lib are unknown
@@ -17,10 +20,14 @@ anyref = __cast(__internals.Anyref, __lib.BinaryenTypeAnyref())
 eqref = __cast(__internals.Eqref, __lib.BinaryenTypeEqref())
 i31ref = __cast(__internals.I31ref, __lib.BinaryenTypeI31ref())
 structref = __cast(__internals.Structref, __lib.BinaryenTypeStructref())
-arrayref = __cast(__internals.Arrayref, __lib.BinaryenTypeArrayref())  # NOTE: Do we need this?
+arrayref = __cast(
+    __internals.Arrayref, __lib.BinaryenTypeArrayref()
+)  # NOTE: Do we need this?
 stringref = __cast(__internals.Stringref, __lib.BinaryenTypeStringref())
 stringview_wtf8 = __cast(__internals.StringviewWTF8, __lib.BinaryenTypeStringviewWTF8())
-stringview_wtf16 = __cast(__internals.StringviewWTF16, __lib.BinaryenTypeStringviewWTF16())
+stringview_wtf16 = __cast(
+    __internals.StringviewWTF16, __lib.BinaryenTypeStringviewWTF16()
+)
 stringview_iter = __cast(__internals.StringviewIter, __lib.BinaryenTypeStringviewIter())
 nullref = __cast(__internals.Nullref, __lib.BinaryenTypeNullref())
 nullexternref = __cast(__internals.NullExternref, __lib.BinaryenTypeNullExternref())
@@ -29,6 +36,7 @@ unreachable = __cast(__internals.Unreachable, __lib.BinaryenTypeUnreachable())
 auto = __cast(__internals.Auto, __lib.BinaryenTypeAuto())
 
 NULL = __ffi.NULL
+
 
 def create(types: list[__internals.Type]) -> __internals.Type:
     return __lib.BinaryenTypeCreate(types, len(types))

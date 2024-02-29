@@ -1,7 +1,13 @@
-from .libbinaryen.binaryen_cffi import lib as __lib, ffi as __ffi
-from typing import NewType as __NewType, TypeAlias as __TypeAlias, Union as __Union, final as __final
+from typing import NewType as __NewType
+from typing import TypeAlias as __TypeAlias
+from typing import Union as __Union
+from typing import final as __final
+
+from .libbinaryen.binaryen_cffi import ffi as __ffi
+from .libbinaryen.binaryen_cffi import lib as __lib
 
 CData: __TypeAlias = __ffi.CData
+
 
 # Empty type, under the hood all BinaXryen types are integers
 # we don't want users to believe that they can modify types with

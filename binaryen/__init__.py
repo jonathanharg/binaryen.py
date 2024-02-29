@@ -1,6 +1,6 @@
-from .__module import Module
-from .__expression import Expression, Block
-from .__functionref import FunctionRef
+from . import internals, literal, operations, types
+from .__expression import Block, Expression
 from .__feature import Feature
-from . import operations, types, internals, literal
-from .libbinaryen.binaryen_cffi import lib, ffi
+from .__functionref import FunctionRef
+from .__module import Module
+from .libbinaryen.binaryen_cffi import ffi, lib

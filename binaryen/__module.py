@@ -1,22 +1,14 @@
 """Binaryen representation of WebAssembly modules"""
 
-from typing import TypeVar, TypeAlias, Any
+from typing import Any, TypeAlias, TypeVar
 
-from .__functionref import FunctionRef
-
-from .libbinaryen.binaryen_cffi import lib, ffi
-from .internals import (
-    Type,
-    Auto,
-    none,
-    CData,
-    Literal,
-    Op,
-)
-from .types import none
 from . import literal
+from .__expression import Block, Expression
 from .__feature import Feature
-from .__expression import Expression, Block
+from .__functionref import FunctionRef
+from .internals import Auto, CData, Literal, Op, Type, none
+from .libbinaryen.binaryen_cffi import ffi, lib
+from .types import none
 
 T = TypeVar("T")
 
@@ -59,17 +51,17 @@ class Module:
         lib.BinaryenModuleDispose(self.ref)
 
     # TODO: binaryenLiteral
-    
-    def i32(self, value:int):
+
+    def i32(self, value: int):
         return self.const(literal.int32(value))
-    
-    def i64(self, value:int):
+
+    def i64(self, value: int):
         return self.const(literal.int64(value))
-    
-    def f32(self, value:int):
+
+    def f32(self, value: int):
         return self.const(literal.float32(value))
 
-    def f64(self, value:int):
+    def f64(self, value: int):
         return self.const(literal.float64(value))
 
     def block(

@@ -1,5 +1,7 @@
-from .libbinaryen.binaryen_cffi import lib 
 from enum import Flag
+
+from .libbinaryen.binaryen_cffi import lib
+
 
 class Feature(Flag):
     MVP = lib.BinaryenFeatureMVP()

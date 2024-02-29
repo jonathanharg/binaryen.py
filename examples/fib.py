@@ -23,7 +23,7 @@ myModule.add_function(
                 myModule.binary(
                     binaryen.operations.LeSInt32(),
                     myModule.local_get(0, i32),
-                    myModule.const(binaryen.literal.int32(1)),
+                    myModule.i32(1),
                 ),
                 myModule.Return(myModule.local_get(0, i32)),
                 myModule.Return(
@@ -35,7 +35,7 @@ myModule.add_function(
                                 myModule.binary(
                                     binaryen.operations.SubInt32(),
                                     myModule.local_get(0, i32),
-                                    myModule.const(binaryen.literal.int32(1)),
+                                    myModule.i32(1),
                                 )
                             ],
                             i32,

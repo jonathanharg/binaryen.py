@@ -3,7 +3,7 @@ from typing import NewType as __NewType, TypeAlias as __TypeAlias, Union as __Un
 
 CData: __TypeAlias = __ffi.CData
 
-# Empty type, under the hood all Binaryen types are integers
+# Empty type, under the hood all BinaXryen types are integers
 # we don't want users to believe that they can modify types with
 # traditional integer operations, because they can't.
 @__final
@@ -11,57 +11,57 @@ class __BaseType:
     pass
 
 
-BinaryenNone = __NewType("BinaryenNone", __BaseType)
-BinaryenInt32 = __NewType("BinaryenInt32", __BaseType)
-BinaryenInt64 = __NewType("BinaryenInt64", __BaseType)
-BinaryenFloat32 = __NewType("BinaryenFloat32", __BaseType)
-BinaryenFloat64 = __NewType("BinaryenFloat64", __BaseType)
-BinaryenVec128 = __NewType("BinaryenVec128", __BaseType)
-BinaryenFuncref = __NewType("BinaryenFuncref", __BaseType)
-BinaryenExternref = __NewType("BinaryenExternref", __BaseType)
-BinaryenAnyref = __NewType("BinaryenAnyref", __BaseType)
-BinaryenEqref = __NewType("BinaryenEqref", __BaseType)
-BinaryenI31ref = __NewType("BinaryenI31ref", __BaseType)
-BinaryenStructref = __NewType("BinaryenStructref", __BaseType)
-BinaryenArrayref = __NewType("BinaryenArrayref", __BaseType)
-BinaryenStringref = __NewType("BinaryenStringref", __BaseType)
-BinaryenStringviewWTF8 = __NewType("BinaryenStringviewWTF8", __BaseType)
-BinaryenStringviewWTF16 = __NewType("BinaryenStringviewWTF16", __BaseType)
-BinaryenStringviewIter = __NewType("BinaryenStringviewIter", __BaseType)
-BinaryenNullref = __NewType("BinaryenNullref", __BaseType)
-BinaryenNullExternref = __NewType("BinaryenNullExternref", __BaseType)
-BinaryenNullFuncref = __NewType("BinaryenNullFuncref", __BaseType)
-BinaryenUnreachable = __NewType("BinaryenUnreachable", __BaseType)
-BinaryenAuto = __NewType("BinaryenAuto", __BaseType)
+none = __NewType("none", __BaseType)
+Int32 = __NewType("Int32", __BaseType)
+Int64 = __NewType("Int64", __BaseType)
+Float32 = __NewType("Float32", __BaseType)
+Float64 = __NewType("Float64", __BaseType)
+Vec128 = __NewType("Vec128", __BaseType)
+Funcref = __NewType("Funcref", __BaseType)
+Externref = __NewType("Externref", __BaseType)
+Anyref = __NewType("Anyref", __BaseType)
+Eqref = __NewType("Eqref", __BaseType)
+I31ref = __NewType("I31ref", __BaseType)
+Structref = __NewType("Structref", __BaseType)
+Arrayref = __NewType("Arrayref", __BaseType)
+Stringref = __NewType("Stringref", __BaseType)
+StringviewWTF8 = __NewType("StringviewWTF8", __BaseType)
+StringviewWTF16 = __NewType("StringviewWTF16", __BaseType)
+StringviewIter = __NewType("StringviewIter", __BaseType)
+Nullref = __NewType("Nullref", __BaseType)
+NullExternref = __NewType("NullExternref", __BaseType)
+NullFuncref = __NewType("NullFuncref", __BaseType)
+Unreachable = __NewType("Unreachable", __BaseType)
+Auto = __NewType("Auto", __BaseType)
 
-numtype = __Union[BinaryenInt32, BinaryenInt64, BinaryenFloat32, BinaryenFloat64]
-vectype = __Union[BinaryenVec128]
-reftype = __Union[BinaryenFuncref, BinaryenExternref]
+numtype = __Union[Int32, Int64, Float32, Float64]
+vectype = __Union[Vec128]
+reftype = __Union[Funcref, Externref]
 
 
-BinaryenType: __TypeAlias = __Union[
-    BinaryenNone,
-    BinaryenInt32,
-    BinaryenInt64,
-    BinaryenFloat32,
-    BinaryenFloat64,
-    BinaryenVec128,
-    BinaryenFuncref,
-    BinaryenExternref,
-    BinaryenAnyref,
-    BinaryenEqref,
-    BinaryenI31ref,
-    BinaryenStructref,
-    BinaryenArrayref,
-    BinaryenStringref,
-    BinaryenStringviewWTF8,
-    BinaryenStringviewWTF16,
-    BinaryenStringviewIter,
-    BinaryenNullref,
-    BinaryenNullExternref,
-    BinaryenNullFuncref,
-    BinaryenUnreachable,
+Type: __TypeAlias = __Union[
+    none,
+    Int32,
+    Int64,
+    Float32,
+    Float64,
+    Vec128,
+    Funcref,
+    Externref,
+    Anyref,
+    Eqref,
+    I31ref,
+    Structref,
+    Arrayref,
+    Stringref,
+    StringviewWTF8,
+    StringviewWTF16,
+    StringviewIter,
+    Nullref,
+    NullExternref,
+    NullFuncref,
+    Unreachable,
 ]
 
-BinaryenOp = __NewType("BinaryenOp", __BaseType)
-BinaryenLiteral = __NewType("BinaryenLiteral", __BaseType)
+Op = __NewType("Op", __BaseType)
+Literal = __NewType("Literal", __BaseType)

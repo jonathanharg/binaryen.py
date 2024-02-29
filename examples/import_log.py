@@ -11,7 +11,7 @@ mod.add_function(
     mod.block(
         None,
         [
-            mod.call(b"log", [mod.const(b.literal.int32(7))], none),
+            mod.call(b"log", [mod.i32(7)], none),
         ],
         none,
     ),

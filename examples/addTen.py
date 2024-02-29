@@ -21,7 +21,7 @@ myModule.add_function(
                 myModule.binary(
                     binaryen.operations.AddInt32(),
                     myModule.local_get(0, i32),
-                    myModule.const(binaryen.literal.int32(10)),
+                    myModule.i32(10),
                 ),
             ),
             myModule.Return(myModule.local_get(1, i32)),

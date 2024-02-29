@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from .libbinaryen.binaryen_cffi import lib
-from .internals import BinaryenType
+from .internals import Type
 
 
 class Expression:
@@ -11,10 +11,10 @@ class Expression:
     def get_id(self) -> int:
         return lib.BinaryenExpressionGetId(self.ref)
 
-    def get_type(self) -> BinaryenType:
+    def get_type(self) -> Type:
         return lib.BinaryenExpressionGetType(self.ref)
 
-    def set_type(self, expr_type: BinaryenType) -> None:
+    def set_type(self, expr_type: Type) -> None:
         return lib.BinaryenExpressionSetType(self.ref, expr_type)
 
     def print(self) -> None:

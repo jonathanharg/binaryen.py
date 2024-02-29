@@ -1,4 +1,4 @@
-from .internals import BinaryenType
+from .internals import Type
 from .libbinaryen.binaryen_cffi import lib
 
 
@@ -12,10 +12,10 @@ class FunctionRef:
     def get_num_vars(self) -> int:
         return lib.BinaryenGetNumVars(self.ref)
 
-    def get_var(self, index: int) -> BinaryenType:
+    def get_var(self, index: int) -> Type:
         return lib.BinaryenFunctionGetVar(self.ref, index)
 
-    # def add_var(self, type: BinaryenType) -> int:
+    # def add_var(self, type: Type) -> int:
     #     return lib.BinaryenFunctionAddVar(self.ref, type)
 
     def get_num_locals(self) -> int:

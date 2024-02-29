@@ -10,24 +10,10 @@ Install through PyPI.
 pip install binaryen.py
 ```
 
-## Test
+## How To Use
 
-```bash
-pytest --doctest-modules --doctest-continue-on-failure --ignore=binaryen/libbinaryen/binaryen --ignore=binaryen/libbinaryen/macos-arm
-```
+Reference the [Binaryen header file](https://github.com/WebAssembly/binaryen/blob/main/src/binaryen-c.h) to understand how to use Binaryen. This package makes no significant changes to the Binaryen API, apart from creating more pythonic objects for Modules, Expressions and Functions.
 
-## Format
+## Missing Functions
 
-```bash
-black --extend-exclude binaryen/_binaryen_cffi.py .
-```
-
-## Docs
-
-```bash
-mkdocs serve
-```
-
-## Build cffi
-
-Build the cffi interface by running `python binaryen/libbinaryen/build.py`
+You can still call any missing functions that haven't been implemented by the wrapper yet by calling them directly. To do this use `binaryen.lib.BinaryenFullFunctionName()` and call the full function name as described in the [Binaryen header file](https://github.com/WebAssembly/binaryen/blob/main/src/binaryen-c.h).

@@ -1,6 +1,6 @@
-import subprocess
-import re
 import os
+import re
+import subprocess
 
 curr_dir = os.path.dirname(__file__)
 header_path = os.path.join(curr_dir, "./binaryen-c.h")
@@ -40,6 +40,6 @@ if __name__ == "__main__":
     header = re.sub(
         r"^__attribute__\(\(deprecated\)\).*$", "", header, flags=re.MULTILINE
     )
-    
+
     with open(output_path, "x", encoding="utf-8") as output:
         output.write(header)

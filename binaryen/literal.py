@@ -18,6 +18,10 @@ def float64(x: float) -> __Literal:
     return __lib.BinaryenLiteralFloat64(x)
 
 
+def vec128(x: list[int]) -> __Literal:
+    return __lib.BinaryenLiteralVec128(x)
+
+
 def float32_bits(x: int) -> __Literal:
     return __lib.BinaryenLiteralFloat32Bits(x)
 

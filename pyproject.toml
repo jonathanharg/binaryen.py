@@ -28,6 +28,9 @@ license = { file = "LICENSE" }
 requires-python = ">=3.12"
 dependencies = ['cffi >= 1.16.0']
 
+[tool.setuptools.packages.find]
+exclude = ["examples*", "binaryen.libbinaryen*"]
+
 [project.urls]
 "Source Code" = "https://github.com/jonathanharg/binaryen.py"
 Issues = "https://github.com/jonathanharg/binaryen.py/issues"
@@ -35,4 +38,4 @@ Changelog = "https://github.com/jonathanharg/binaryen.py/blob/main/CHANGELOG.md"
 "Original Source Code" = "https://github.com/WebAssembly/binaryen"
 
 [project.optional-dependencies]
-dev = ["black", "isort", "mkdocs", "pytest"]
+dev = ["black", "isort"]

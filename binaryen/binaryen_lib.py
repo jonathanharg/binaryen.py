@@ -1,10 +1,12 @@
-from ._binaryen import ffi
-import platform
 import os
+import platform
+
+from ._binaryen import ffi
+
 
 def get_target():
     if platform.system() == "Linux":
-        if platform.machine() == 'aarch64':
+        if platform.machine() == "aarch64":
             return "linux-aarch64.a"
         else:
             return "linux-x86_64.a"
@@ -17,7 +19,8 @@ def get_target():
             return "macos-arm64.dylib"
         else:
             return "macos-x86_64.dylib"
-        
+
+
 curr_dir = os.path.dirname(__file__)
 dll_path = os.path.join(curr_dir, f"libbinaryen/{get_target()}")
 

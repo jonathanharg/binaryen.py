@@ -2,9 +2,10 @@
 
 from typing import cast as __cast
 
-from . import internals as __internals
-from .binaryen_lib import ffi as __ffi
-from .binaryen_lib import lib as __lib
+from .. import internals as __internals
+from ..binaryen_lib import ffi as __ffi
+from ..binaryen_lib import lib as __lib
+from . import array_type, heap_type, struct_type, signature_type
 
 # These "types" are actually integers representing the type
 # e.g. none = 0, i32 = 2 etc.
@@ -33,6 +34,7 @@ NullFuncref = __cast(__internals.BinaryenType, __lib.BinaryenTypeNullFuncref())
 Unreachable = __cast(__internals.BinaryenType, __lib.BinaryenTypeUnreachable())
 Auto = __cast(__internals.BinaryenType, __lib.BinaryenTypeAuto())
 
+
 def create(types: list[__internals.BinaryenType]) -> __internals.BinaryenType:
     return __lib.BinaryenTypeCreate(types, len(types))
 
@@ -56,31 +58,44 @@ HeapI31 = __cast(__internals.BinaryenHeapType, __lib.BinaryenHeapTypeI31())
 HeapStruct = __cast(__internals.BinaryenHeapType, __lib.BinaryenHeapTypeStruct())
 HeapArray = __cast(__internals.BinaryenHeapType, __lib.BinaryenHeapTypeArray())
 HeapString = __cast(__internals.BinaryenHeapType, __lib.BinaryenHeapTypeString())
-HeapStringviewWTF8 = __cast(__internals.BinaryenHeapType, __lib.BinaryenHeapTypeStringviewWTF8())
-HeapStringviewWTF16 = __cast(__internals.BinaryenHeapType, __lib.BinaryenHeapTypeStringviewWTF16())
-HeapStringviewIter = __cast(__internals.BinaryenHeapType, __lib.BinaryenHeapTypeStringviewIter())
+HeapStringviewWTF8 = __cast(
+    __internals.BinaryenHeapType, __lib.BinaryenHeapTypeStringviewWTF8()
+)
+HeapStringviewWTF16 = __cast(
+    __internals.BinaryenHeapType, __lib.BinaryenHeapTypeStringviewWTF16()
+)
+HeapStringviewIter = __cast(
+    __internals.BinaryenHeapType, __lib.BinaryenHeapTypeStringviewIter()
+)
 HeapNone = __cast(__internals.BinaryenHeapType, __lib.BinaryenHeapTypeNone())
 HeapNoext = __cast(__internals.BinaryenHeapType, __lib.BinaryenHeapTypeNoext())
 HeapNofunc = __cast(__internals.BinaryenHeapType, __lib.BinaryenHeapTypeNofunc())
 
 
-# TODO: BinaryenHeapType
-
-# TODO: BinaryenStructType
-
-# TODO: BinaryenArrayType
-
-# TODO: BinaryenHeapType
+def get_heap_type(
+    binaryen_type: __internals.BinaryenType,
+) -> __internals.BinaryenHeapType:
+    return __lib.BinaryenTypeGetHeapType(binaryen_type)
 
 
 def is_nullable(binaryen_type: __internals.BinaryenType) -> bool:
     return __lib.BinaryenTypeIsNullable(binaryen_type)
 
 
-# TODO: BinaryenTypeFromHeapType
+def from_heap_type(
+    heap_type: __internals.BinaryenHeapType, nullable: bool
+) -> __internals.BinaryenType:
+    return __lib.BinaryenTypeFromHeapType(heap_type, nullable)
 
-# TODO: BinaryExpressionId
 
-# TODO: BinaryExternalKind
-
-# TODO: BinaryFeatures
+ExternalFunction = __cast(
+    __internals.BinaryenExternalKind, __lib.BinaryenExternalFunction()
+)
+ExternalTable = __cast(__internals.BinaryenExternalKind, __lib.BinaryenExternalTable())
+ExternalMemory = __cast(
+    __internals.BinaryenExternalKind, __lib.BinaryenExternalMemory()
+)
+ExternalGlobal = __cast(
+    __internals.BinaryenExternalKind, __lib.BinaryenExternalGlobal()
+)
+ExternalTag = __cast(__internals.BinaryenExternalKind, __lib.BinaryenExternalTag())

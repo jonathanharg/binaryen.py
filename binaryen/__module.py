@@ -2,15 +2,13 @@
 
 from typing import Any
 
-from .internals import BinaryenType
-
 from . import literal
 from .__expression import Block, Expression
 from .__feature import Feature
 from .__functionref import FunctionRef
 from .binaryen_lib import ffi, lib
+from .internals import BinaryenHeapType, BinaryenLiteral, BinaryenOp, BinaryenType
 from .types import TypeNone
-from .internals import BinaryenLiteral, BinaryenOp
 
 type BinaryenExportRef = Any
 
@@ -50,8 +48,6 @@ class Module:
         # Free the module when it is garbage collected
         lib.BinaryenModuleDispose(self.ref)
 
-    # TODO: binaryenLiteral
-
     def i32(self, value: int):
         return self.const(literal.int32(value))
 
@@ -70,7 +66,6 @@ class Module:
         children: list[Expression],
         binaryen_type: BinaryenType,
     ) -> Block:
-        # Convert children object list to list of children pointers
         children_refs = list(map(lambda x: x.ref, children))
         ref = lib.BinaryenBlock(
             self.ref,
@@ -85,9 +80,10 @@ class Module:
         self,
         condition: Expression,
         if_true: Expression,
-        if_false: Expression,
+        if_false: Expression | None,
     ) -> Expression:
-        ref = lib.BinaryenIf(self.ref, condition.ref, if_true.ref, if_false.ref)
+        if_false_safe = ffi.NULL if if_false is None else if_false.ref
+        ref = lib.BinaryenIf(self.ref, condition.ref, if_true.ref, if_false_safe)
         return Expression(ref)
 
     def loop(self, label: bytes, body: Expression):
@@ -103,7 +99,21 @@ class Module:
         ref = lib.BinaryenBreak(self.ref, name, condition_ref, value_ref)
         return Expression(ref)
 
-    # TODO: Switch, Call, CallIndirect, ReturnCall, ReturnCallIndirect,
+    # TODO: Switch
+
+    def call(
+        self,
+        target: bytes,
+        operands: list[Expression],
+        return_type: BinaryenType,
+    ) -> Expression:
+        operand_refs = list(map(lambda x: x.ref, operands))
+        ref = lib.BinaryenCall(
+            self.ref, target, operand_refs, len(operand_refs), return_type
+        )
+        return Expression(ref)
+
+    # TODO: CallIndirect, ReturnCall, ReturnCallIndirect,
 
     def local_get(self, index: int, local_type: BinaryenType) -> Expression:
         ref = lib.BinaryenLocalGet(self.ref, index, local_type)
@@ -113,7 +123,9 @@ class Module:
         ref = lib.BinaryenLocalSet(self.ref, index, value.ref)
         return Expression(ref)
 
-    def local_tee(self, index: int, value: Expression, value_type: BinaryenType) -> Expression:
+    def local_tee(
+        self, index: int, value: Expression, value_type: BinaryenType
+    ) -> Expression:
         ref = lib.BinaryenLocalTee(self.ref, index, value.ref, value_type)
         return Expression(ref)
 
@@ -127,6 +139,7 @@ class Module:
 
     def load(
         self,
+        load_bytes: bytes,
         signed: bool,
         offset: int,
         align: int,
@@ -135,13 +148,13 @@ class Module:
         memory_name: bytes,
     ) -> Expression:
         ref = lib.BinaryenLoad(
-            self.ref, signed, offset, align, load_type, ptr.ref, memory_name
+            self.ref, load_bytes, signed, offset, align, load_type, ptr.ref, memory_name
         )
         return Expression(ref)
 
     def store(
         self,
-        bytes_num: int,
+        bytes_store: bytes,
         offset: int,
         align: int,
         ptr: Expression,
@@ -151,7 +164,7 @@ class Module:
     ) -> Expression:
         ref = lib.BinaryenStore(
             self.ref,
-            bytes_num,
+            bytes_store,
             offset,
             align,
             ptr.ref,
@@ -190,8 +203,8 @@ class Module:
         return Expression(ref)
 
     def Return(self, value: Expression | None) -> Expression:
-        expression_ref = getattr(value, "ref", None)
-        result_ref = lib.BinaryenReturn(self.ref, _none_to_null(expression_ref))
+        expression_ref = ffi.NULL if value is None else value.ref
+        result_ref = lib.BinaryenReturn(self.ref, expression_ref)
         return Expression(result_ref)
 
     # TODO: MemorySize, MemoryGrow
@@ -206,23 +219,22 @@ class Module:
 
     # TODO: AtomicLoad, AtomicStore, AtomicRMW, AtomicCmpxchg, AtomicWait, AtomicNotify, AtomicFence
     # TODO: SIMDExtract, SIMDReplace, SIMDShuffle, SIMDTernary, SIMDShift, SIMDLoad, SIMDLoadStoreLane
-    # TODO: MemoryInit, MemoryCopy, MemoryFill,
-    # TODO: RefAs, RefFuc, RefEq
-    # TODO: TableGet, TableSet, TableGrow
+    # TODO: MemoryInit, DataDrop, MemoryCopy, MemoryFill,
+    # TODO: RefNull, RefIsNull, RefAs, RefFuc, RefEq
+    # TODO: TableGet, TableSet, TableSize, TableGrow
     # TODO: Try, Throw, Rethrow,
-    # TODO: TupleMake, TupleExtract, Pop, I31New, I31Get
+    # TODO: TupleMake, TupleExtract, Pop, RefI31, I31Get
     # TODO: CallRef, ReftTest, RefCast, BrOn
     # TODO: StructNew, StructGet, StructSet
-    # TODO: ArrayNew
+    # TODO: ArrayNew, ArrayNewData
 
-    def array_new_fixed(self, heap_type: any, values: list[Expression]):
-        # TODO: Fix type
+    def array_new_fixed(self, heap_type: BinaryenHeapType, values: list[Expression]):
         num_values = len(values)
         value_refs = list(map(lambda x: x.ref, values))
         ref = lib.BinaryenArrayNewFixed(self.ref, heap_type, value_refs, num_values)
         return Expression(ref)
 
-    # TODO: ArrayGet, ArraySet, ArrayLen, ArrayCopy
+    # TODO: ArrayGet, ArraySet, ArrayLen, ArrayGet, ArraySet, ArrayLen, ArrayCopy
     # TODO: StringNew
 
     def string_const(self, name: bytes) -> Expression:
@@ -231,70 +243,21 @@ class Module:
 
     # TODO: StringMeasure, StringEncode, StringConcat, StringEq, StringAs, StringWTF8Advance, StringTWF16Get, StringIterNext, StringIterMove, StringSliceWTF, StringSliceIter
 
-    # TODO: Carry on from here
+    #### Getters/Setters for BinaryenExpression ####
 
-    # if_get_condition
-    # if_set_condition
-    # if_get_if_true
-    # if_set_if_true
-    # if_get_if_false
-    # if_set_if_false
+    # TODO: If: GetCondition ... SetIfFalse
 
-    # loop_get_name
-    # loop_set_name
-    # loop_get_body
-    # loop_set_body
+    # TODO: Loop: GetName ... SetBody
 
-    # break_get_name
-    # break_set_name
-    # break_set_condition
-    # break_get_value
-    # break_set_value
+    # TODO: Break: GetName ... SetValue
 
-    # switch_get_num_names
-    # switch_get_name_at
-    # switch_set_name_at
-    # switch_append_name
-    # switch_insert_name_at
-    # switch_remove_name_at
-    # switch_get_default_name
-    # switch_set_default_name
-    # switch_get_condition
-    # switch_get_value
-    # switch_set_value
+    # TODO: Switch: GetNumNames ... SetValue
 
-    # call_get_target
-    # call_set_target
+    # TODO: Call: GetTarget ... SetReturn
 
-    # call_get_num_operands
-    # call_get_operand_at
-    # call_set_operand_at
-    # call_append_operand
-    # call_insert_operand_at
-    # call_remove_operand_at
-    # call_is_return
-    # call_set_return
+    # TODO: CallIndirect: GetTarget ... SetResults
 
-    # Imports
-
-    def add_function_import(
-        self,
-        internal_name: bytes,
-        external_module_name: bytes,
-        external_base_name: bytes,
-        params: BinaryenType,
-        results: BinaryenType,
-    ) -> None:
-        lib.BinaryenAddFunctionImport(
-            self.ref,
-            internal_name,
-            external_module_name,
-            external_base_name,
-            params,
-            results,
-        )
-
-    # EXTRA:
+    # TODO: LocalGet ... StringSliceItter
 
     def add_function(
         self,
@@ -322,6 +285,8 @@ class Module:
         )
         return FunctionRef(ref)
 
+    # TODO: BinaryenAddFunctionWithHeapType
+
     def get_function(self, name: bytes) -> FunctionRef:
         ref = lib.BinaryenGetFunction(self.ref, name)
         return FunctionRef(ref)
@@ -336,20 +301,43 @@ class Module:
         ref = lib.BinaryenGetFunctionByIndex(self.ref, index)
         return FunctionRef(ref)
 
-    def call(
-        self,
-        target: bytes,
-        operands: list[Expression],
-        return_type: BinaryenType,
-    ) -> Expression:
-        operand_refs = list(map(lambda x: x.ref, operands))
-        ref = lib.BinaryenCall(
-            self.ref, target, operand_refs, len(operand_refs), return_type
-        )
-        return Expression(ref)
+    # Imports
 
-    def auto_drop(self):
-        lib.BinaryenModuleAutoDrop(self.ref)
+    def add_function_import(
+        self,
+        internal_name: bytes,
+        external_module_name: bytes,
+        external_base_name: bytes,
+        params: BinaryenType,
+        results: BinaryenType,
+    ) -> None:
+        lib.BinaryenAddFunctionImport(
+            self.ref,
+            internal_name,
+            external_module_name,
+            external_base_name,
+            params,
+            results,
+        )
+
+    # TODO: AddTableImport, AddMemoryImport, AddGlobalImport, AddTagImport
+
+    def add_function_export(
+        self, internal_name: bytes, external_name: bytes
+    ) -> BinaryenExportRef:
+        return lib.BinaryenAddFunctionExport(self.ref, internal_name, external_name)
+
+    # TODO: AddTableExport, AddMemoryExport, AddGlobalExport, AddTagExport
+
+    # TODO: GetExport, RemoveExport, GetNumExports, GetExportByIndex
+
+    # TODO: AddGlobal, GetGlobal, RemoveGlobal, GetNumGlobals, GetGlobalByIndex
+
+    # TODO: AddTag, GetTag, RemoveTag
+
+    # TODO: AddTable, RemoveTable, GetNumTables, GetTable, GetTableByIndex
+
+    # TODO: ElementSegments
 
     def set_memory(
         self,
@@ -385,6 +373,10 @@ class Module:
             name,
         )
 
+    # TODO: HasMemory, MemoryGetInitial, MemoryHasMax, MemoryGetMax, MemoryImportGetModule, MemoryImportGetBase, MemoryIsShared, MemoryIs64
+
+    # TODO: GetNumMemorySegments, GetMemorySegmentByteOffset, GetMemorySegmentByteLength, GetMemorySegmentPassive, CopyMemorySegmentData
+
     def set_start(self, start: FunctionRef):
         lib.BinaryenSetStart(self.ref, start.ref)
 
@@ -395,19 +387,28 @@ class Module:
     def set_feature(self, feature: Feature):
         lib.BinaryenModuleSetFeatures(self.ref, feature.value)
 
-    def add_function_export(
-        self, internal_name: bytes, external_name: bytes
-    ) -> BinaryenExportRef:
-        return lib.BinaryenAddFunctionExport(self.ref, internal_name, external_name)
-
-    def optimize(self) -> None:
-        return lib.BinaryenModuleOptimize(self.ref)
+    # TODO: Module Parse
 
     def print(self) -> None:
         lib.BinaryenModulePrint(self.ref)
 
+    # TODO: PrintStackIR, PrintAsmjs
+
     def validate(self) -> bool:
         return lib.BinaryenModuleValidate(self.ref)
+
+    def optimize(self) -> None:
+        return lib.BinaryenModuleOptimize(self.ref)
+
+    # TODO: ModuleUpdateMaps, GetOptimizeLevel, SetOptimizeLevel, GetShrinkLevel, SetShrinkLevel, GetDebugInfo, SetDebugInfo
+    # TODO: GetLowMemoryUnused, SetLowMemoryUnused, GetZeroFilledMemory, SetZeroFilledMemory, GetFastMath, SetFastMath
+    # TODO: GetPassArgument, SetPassArgument, ClearPassArguments
+    # TODO: Optimisation settings.....
+
+    def auto_drop(self):
+        lib.BinaryenModuleAutoDrop(self.ref)
+
+    # TODO: WriteText, WriteStackIR, WriteWithSourceMap
 
     def emit_text(self) -> str:
         text_ptr = lib.BinaryenModuleAllocateAndWriteText(self.ref)
@@ -445,3 +446,10 @@ class Module:
         with open(filename, "wb") as file:
             binary = self.emit_binary()
             file.write(binary)
+
+    # TODO: Function Operations, Table Operations, Elem Segment Operations, Global Operations, Tag Operations, Import Operations, Export Operations, custom Sections
+    # TODO: SideEffects
+    # TODO: CFG/Relooper
+    # TODO: Expression Runner
+    # TODO: TypeBuilder
+    # TODO: Utilities

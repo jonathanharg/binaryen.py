@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 from .binaryen_lib import lib
-from .internals import BinaryenType
+from .internals import BinaryenExpressionId, BinaryenType
 
 
 class Expression:
     def __init__(self, ref):
         self.ref = ref
 
-    def get_id(self) -> int:
+    def get_id(self) -> BinaryenExpressionId:
         return lib.BinaryenExpressionGetId(self.ref)
 
     def get_type(self) -> BinaryenType:

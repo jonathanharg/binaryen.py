@@ -26,7 +26,7 @@ if platform.system() == "Linux":
     if platform.machine() == "aarch64":
         lib_name = "linux-aarch64"
     else:
-        lib_name = "linux-x86_64"
+        lib_name = "binaryen"
 
 if platform.system() == "Windows":
     lib_name = "windows-x86_64"

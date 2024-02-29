@@ -1,5 +1,5 @@
 import binaryen
-from binaryen.types import Int32, TypeNone
+from binaryen.type import Int32, TypeNone
 
 
 # Equivalent python function
@@ -10,7 +10,7 @@ def add(x, y):
 myModule = binaryen.Module()
 myModule.add_function(
     b"add",
-    binaryen.types.create([Int32, Int32]),
+    binaryen.type.create([Int32, Int32]),
     Int32,
     [Int32],
     myModule.block(

@@ -1,5 +1,5 @@
 import binaryen as b
-from binaryen.types import NULL, Int32, TypeNone
+from binaryen.type import NULL, Int32, TypeNone
 
 mod = b.Module()
 mod.add_function_import(

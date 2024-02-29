@@ -1,5 +1,5 @@
 import binaryen
-from binaryen.types import Int32, TypeNone
+from binaryen.type import Int32, TypeNone
 
 
 # Equivalent python function

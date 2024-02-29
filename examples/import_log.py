@@ -1,5 +1,5 @@
 import binaryen as b
-from binaryen.types import Int32, TypeNone
+from binaryen.type import Int32, TypeNone
 
 mod = b.Module()
 mod.add_function_import(b"log", b"env", b"printf", Int32, TypeNone)

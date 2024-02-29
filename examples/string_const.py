@@ -1,5 +1,5 @@
 import binaryen as b
-from binaryen.types import NULL, Int32, TypeNone
+from binaryen.type import NULL, Int32, TypeNone
 
 mod = b.Module()
 mod.set_feature(b.Feature.Strings | b.Feature.GC | b.Feature.ReferenceTypes)
@@ -19,7 +19,7 @@ mod.set_memory(
 
 str_const = mod.string_const(b"Hello Wasm!\n")
 str_var_set = mod.local_set(0, str_const)
-str_var = mod.local_get(0, b.types.Stringref)
+str_var = mod.local_get(0, b.type.Stringref)
 
 # str2 = str_const.copy(mod)
 # str2_var_set = mod.local_set(1, str2)

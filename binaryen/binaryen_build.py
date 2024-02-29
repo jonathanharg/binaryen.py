@@ -20,27 +20,9 @@ if not cdef_path.is_file():
 
 lib_path = str(lib_path)
 
-lib_name = ""
-
-if platform.system() == "Linux":
-    if platform.machine() == "aarch64":
-        lib_name = "linux-aarch64"
-    else:
-        lib_name = "binaryen"
-
-if platform.system() == "Windows":
-    lib_name = "windows-x86_64"
-
-if platform.system() == "Darwin":
-    if platform.machine() == "arm64":
-        # lib_name = "macos-arm64"
-        lib_name = "binaryen"
-    else:
-        lib_name = "macos-x86_64"
-
 ffibuilder = cffi.FFI()
 # Supports windows for now
-ffibuilder.set_source("binaryen._binaryen", "#include \"binaryen-c.h\"", libraries=[lib_name], library_dirs=[lib_path], include_dirs=[lib_path])
+ffibuilder.set_source("binaryen._binaryen", "#include \"binaryen-c.h\"", libraries=["binaryen"], library_dirs=[lib_path], include_dirs=[lib_path])
 
 with open(cdef_path, "r", encoding="utf-8") as file:
     cdef = file.read()

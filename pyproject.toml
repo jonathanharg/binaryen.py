@@ -36,3 +36,19 @@ Changelog = "https://github.com/jonathanharg/binaryen.py/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 dev = ["black", "isort"]
+
+[tool.cibuildwheel]
+skip = "pp*"
+build-frontend = "build"
+before-all = ["tree"]
+before-build = ["tree"]
+# environment = { BINARYEN_PY_ROOT="$(pwd)" }
+
+[tool.cibuildwheel.macos]
+archs = ["x86_64", "arm64"]
+
+[tool.cibuildwheel.linux]
+archs = ["x86_64", "aarch64"]
+
+[tool.cibuildwheel.windows]
+archs = ["AMD64", "x86"]

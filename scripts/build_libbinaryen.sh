@@ -1,3 +1,5 @@
+#!/bin/bash
+
 case "$(uname -sr)" in
 
 Darwin*)

@@ -7,7 +7,13 @@ from .__expression import Block, Expression
 from .__feature import Feature
 from .__functionref import FunctionRef
 from ._binaryen import ffi, lib
-from .internals import BinaryenHeapType, BinaryenLiteral, BinaryenOp, BinaryenType
+from .internals import (
+    BinaryenGlobalRef,
+    BinaryenHeapType,
+    BinaryenLiteral,
+    BinaryenOp,
+    BinaryenType,
+)
 from .type import TypeNone
 
 type BinaryenExportRef = Any
@@ -170,7 +176,7 @@ class Module:
             ptr.ref,
             value.ref,
             store_type,
-            memory_name,
+            _none_to_null(memory_name),
         )
         return Expression(ref)
 
@@ -226,7 +232,22 @@ class Module:
     # TODO: TupleMake, TupleExtract, Pop, RefI31, I31Get
     # TODO: CallRef, ReftTest, RefCast, BrOn
     # TODO: StructNew, StructGet, StructSet
-    # TODO: ArrayNew, ArrayNewData
+
+    def array_new(
+        self, heap_type: BinaryenHeapType, size: Expression, init: Expression
+    ):
+        ref = lib.BinaryenArrayNew(self.ref, heap_type, size.ref, init.ref)
+        return Expression(ref)
+
+    def array_new_data(
+        self,
+        heap_type: BinaryenHeapType,
+        name: bytes,
+        offset: Expression,
+        size: Expression,
+    ):
+        ref = lib.BinaryenArrayNewData(self.ref, heap_type, name, offset.ref, size.ref)
+        return Expression(ref)
 
     def array_new_fixed(self, heap_type: BinaryenHeapType, values: list[Expression]):
         num_values = len(values)
@@ -234,7 +255,38 @@ class Module:
         ref = lib.BinaryenArrayNewFixed(self.ref, heap_type, value_refs, num_values)
         return Expression(ref)
 
-    # TODO: ArrayGet, ArraySet, ArrayLen, ArrayGet, ArraySet, ArrayLen, ArrayCopy
+    def array_get(
+        self, ref: Expression, index: Expression, array_type: BinaryenType, signed: bool
+    ):
+        ref = lib.BinaryenArrayGet(self.ref, ref.ref, index.ref, array_type, signed)
+        return Expression(ref)
+
+    def array_set(self, ref: Expression, index: Expression, value: Expression):
+        ref = lib.BinaryenArraySet(self.ref, ref.ref, index.ref, value.ref)
+        return Expression(ref)
+
+    def array_len(self, ref: Expression):
+        ref = lib.BinaryenArrayLen(self.ref, ref.ref)
+        return Expression(ref)
+
+    def array_copy(
+        self,
+        dest_ref: Expression,
+        dest_index: Expression,
+        src_ref: Expression,
+        src_index: Expression,
+        length: Expression,
+    ):
+        ref = lib.BinaryenArrayCopy(
+            self.ref,
+            dest_ref.ref,
+            dest_index.ref,
+            src_ref.ref,
+            src_index.ref,
+            length.ref,
+        )
+        return Expression(ref)
+
     # TODO: StringNew
 
     def string_const(self, name: bytes) -> Expression:
@@ -331,7 +383,13 @@ class Module:
 
     # TODO: GetExport, RemoveExport, GetNumExports, GetExportByIndex
 
-    # TODO: AddGlobal, GetGlobal, RemoveGlobal, GetNumGlobals, GetGlobalByIndex
+    def add_global(
+        self, name: bytes, global_type: BinaryenType, mutable: bool, init: Expression
+    ) -> BinaryenGlobalRef:
+        ref = lib.BinaryenAddGlobal(self.ref, name, global_type, mutable, init.ref)
+        return ref
+
+    # TODO: GetGlobal, RemoveGlobal, GetNumGlobals, GetGlobalByIndex
 
     # TODO: AddTag, GetTag, RemoveTag
 
@@ -344,7 +402,8 @@ class Module:
         initial: int,
         maximum: int,
         export_name: bytes,
-        segments: list[bytes],
+        segment_names: list[bytes],
+        segment_datas: list[bytes],
         segment_passive: list[bool],
         segment_offsets: list[Expression],
         segment_sizes: list[int],
@@ -352,22 +411,30 @@ class Module:
         memory64: bool,
         name: bytes,
     ):
-        if len(segment_sizes) != len(segments):
+        if not (
+            len(segment_names)
+            == len(segment_datas)
+            == len(segment_passive)
+            == len(segment_offsets)
+            == len(segment_sizes)
+        ):
             raise RuntimeError("Segment sizes do not match")
 
         segment_offset_refs = list(map(lambda x: x.ref, segment_offsets))
-        segments_char_arr = list(map(lambda x: ffi.new("char[]", x), segments))
+        segment_names_charptr = list(map(lambda x: ffi.new("char[]", x), segment_names))
+        segment_datas_charptr = list(map(lambda x: ffi.new("char[]", x), segment_datas))
 
         lib.BinaryenSetMemory(
             self.ref,
             initial,
             maximum,
             export_name,
-            segments_char_arr,
+            segment_names_charptr,
+            segment_datas_charptr,
             segment_passive,
             segment_offset_refs,
             segment_sizes,
-            len(segments),
+            len(segment_names),
             shared,
             memory64,
             name,
@@ -451,5 +518,7 @@ class Module:
     # TODO: SideEffects
     # TODO: CFG/Relooper
     # TODO: Expression Runner
-    # TODO: TypeBuilder
+
+    # TODO: SetTypeName, SetFieldName
+
     # TODO: Utilities

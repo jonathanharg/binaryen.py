@@ -1,12 +1,12 @@
 import binaryen as b
-from binaryen.type import NULL, Int32, TypeNone
+from binaryen.type import Int32, TypeNone
 
 mod = b.Module()
 mod.add_function_import(
     b"print",
     b"wasi_snapshot_preview1",
     b"fd_write",
-    b.types.create([Int32, Int32, Int32, Int32]),
+    b.type.create([Int32, Int32, Int32, Int32]),
     Int32,
 )
 
@@ -18,6 +18,7 @@ mod.set_memory(
     1,
     1,
     b"memory",
+    [b"str"],
     [b"Hello Wasm!\n"],
     [False],
     [mod.i32(8)],
@@ -28,8 +29,8 @@ mod.set_memory(
 )
 
 # Pointer to start of string and length of string
-string_pointer = mod.store(4, 0, 0, mod.i32(0), mod.i32(8), Int32, NULL)
-string_length = mod.store(4, 0, 2, mod.i32(4), mod.i32(12), Int32, NULL)
+string_pointer = mod.store(4, 0, 0, mod.i32(0), mod.i32(8), Int32, None)
+string_length = mod.store(4, 0, 2, mod.i32(4), mod.i32(12), Int32, None)
 # | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 |
 #  [      8      ] [      12     ]  H   e   l    l    o    \    W    a    s    m    !    \n   \0
 

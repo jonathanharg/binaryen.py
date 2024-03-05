@@ -18,6 +18,19 @@ CYGWIN* | MINGW* | MINGW32* | MSYS*)
     ;;
 esac
 
+if [ -z ${BINARYEN_VERSION+x} ]
+then
+    echo "\$BINARYVEN_VERSION not set"
+    exit 1
+fi
+
+wildcards="--wildcards"
+
+if [[ "$platform" == "macos" ]]
+then
+    wildcards=""
+fi
+
 arch=$(uname -m)
 lib_path="./binaryen/libbinaryen/$arch-$platform/"
 file="binaryen-version_$BINARYEN_VERSION-$arch-$platform.tar.gz"
@@ -25,7 +38,7 @@ url="https://github.com/WebAssembly/binaryen/releases/download/version_$BINARYEN
 
 mkdir -p $lib_path
 wget -nc --no-check-certificate --content-disposition $url -P $lib_path
-tar -xzvf $lib_path$file -C $lib_path --strip-components=1 --wildcards \
+tar -xzvf $lib_path$file -C $lib_path --strip-components=1 $wildcards \
     "binaryen-version_$BINARYEN_VERSION/include/binaryen-c.h" \
     "binaryen-version_$BINARYEN_VERSION/include/wasm-delegations.def" \
     "binaryen-version_$BINARYEN_VERSION/lib/*"

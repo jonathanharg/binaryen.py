@@ -4,7 +4,7 @@ import platform
 from pathlib import Path
 
 host_platform = platform.system().lower()
-if host_platform == "Darwin":
+if host_platform == "darwin":
     host_platform = "macos"
 
 host_machine = platform.machine().lower()

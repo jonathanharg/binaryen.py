@@ -43,7 +43,9 @@ packages = ["binaryen", "binaryen.type"]
 [tool.cibuildwheel]
 build = "cp312-*"
 skip = "pp*"
+# WARNING: If you update this also update it in the Github Action!!
 environment = { BINARYEN_VERSION = "117" }
+# WARNING: If you update this also update it in the Github Action!!
 before-all = ["bash ./scripts/build_libbinaryen.sh"]
 
 [tool.cibuildwheel.macos]

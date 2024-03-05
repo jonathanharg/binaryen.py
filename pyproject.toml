@@ -36,3 +36,6 @@ Changelog = "https://github.com/jonathanharg/binaryen.py/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 dev = ["black", "isort"]
+
+[tool.setuptools]
+packages = ["binaryen"]

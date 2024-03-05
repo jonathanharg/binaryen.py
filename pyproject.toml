@@ -44,10 +44,10 @@ packages = ["binaryen", "binaryen.type"]
 build = "cp312-*"
 skip = "pp*"
 
-[tool.cibuildhweel.macos]
+[tool.cibuildwheel.macos]
 archs = ["x86_64", "arm64"]
 
-[tool.cibuildhweel.linux]
+[tool.cibuildwheel.linux]
 archs = ["x86_64", "aarch64"]
 
 [tool.cibuildwheel.windows]

@@ -3,29 +3,52 @@ import os
 import platform
 from pathlib import Path
 
-root_path = os.environ.get("BINARYEN_PY_ROOT", None)
+host_platform = platform.system().lower()
+if host_platform == "Darwin":
+    host_platform = "macos"
 
-if root_path is None:
-    # raise RuntimeError("Set BINARYEN_PY_ROOT environment variable to the root folder of binaryen.py")
-    root_path = Path(__file__).resolve().parent.parent
-    print(f"No path specified!!! Defaulting to: {root_path.absolute()}")
+host_machine = platform.machine().lower()
+
+root_path_override = os.environ.get("BINARYEN_PY_ROOT")
+
+print("==== BUILD ====")
+print(f"Building binaryen.py for {host_machine}-{host_platform}")
+
+file_path = Path(__file__).resolve().parent.parent
+root_path = Path(file_path) / f"binaryen/libbinaryen/{host_machine}-{host_platform}/"
+
+if root_path_override is not None:
+    root_path = Path(root_path_override).resolve()
+    print(f"INFO: Overriding root path to {root_path.absolute()}")
 
 
-lib_path = (Path(root_path)/"binaryen/libbinaryen")
-cdef_path = (Path(root_path)/"binaryen/libbinaryen/binaryen-c.c")
-header_path = (Path(root_path)/"binaryen/libbinaryen/binaryen-c.h")
+def valid(path):
+    return "valid" if path else "INVALID!"
 
-if not lib_path.is_dir():
-    raise RuntimeError("Cannot find libbinaryen folder, is BINARYEN_PY_ROOT set correctly?")
 
-if not cdef_path.is_file():
-    raise RuntimeError("Cannot find binaryen-c.c, have you run create_cdef.py?")
+include_path = root_path / "include"
+cdef_path = include_path / "binaryen-c.c"
+header_path = include_path / "binaryen-c.h"
+wasm_path = include_path / "wasm-delegations.def"
+lib_path = root_path / "lib"
 
-library_str = str(lib_path.absolute())
-print(f"LIBRARY DIR IS: {library_str}")
+print("== Paths ==")
+print(f"include    {valid(include_path.is_dir())}    {include_path.absolute()}")
+print(f"binaryen-c.h   {valid(header_path.is_file())}    {header_path.absolute()}")
+print(f"delegations   {valid(wasm_path.is_file())}    {wasm_path.absolute()}")
+print(f"binaryen-c.c   {valid(cdef_path.is_file())}    {cdef_path.absolute()}")
+
+print(f"lib   {valid(lib_path.is_dir())}    {lib_path.absolute()}")
 
 ffibuilder = cffi.FFI()
-ffibuilder.set_source("binaryen._binaryen", "#include \"binaryen-c.h\"", libraries=["binaryen"], library_dirs=[library_str], include_dirs=[library_str], language="c++")
+ffibuilder.set_source(
+    "binaryen._binaryen",
+    '#include "binaryen-c.h"',
+    libraries=["binaryen"],
+    library_dirs=[str(lib_path.absolute())],
+    include_dirs=[str(include_path.absolute())],
+    language="c++",
+)
 
 with open(cdef_path, "r", encoding="utf-8") as file:
     cdef = file.read()

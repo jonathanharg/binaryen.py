@@ -31,7 +31,7 @@ dependencies = ['cffi >= 1.15.0']
 [project.urls]
 "Source Code" = "https://github.com/jonathanharg/binaryen.py"
 Issues = "https://github.com/jonathanharg/binaryen.py/issues"
-Changelog = "https://github.com/jonathanharg/binaryen.py/blob/main/CHANGELOG.md" 
+Changelog = "https://github.com/jonathanharg/binaryen.py/blob/main/CHANGELOG.md"
 "Original Source Code" = "https://github.com/WebAssembly/binaryen"
 
 [project.optional-dependencies]
@@ -43,12 +43,14 @@ packages = ["binaryen", "binaryen.type"]
 [tool.cibuildwheel]
 build = "cp312-*"
 skip = "pp*"
+environment = { BINARYEN_VERSION = "117" }
 
 [tool.cibuildwheel.macos]
 archs = ["x86_64", "arm64"]
 
 [tool.cibuildwheel.linux]
-archs = ["x86_64", "aarch64"]
+# archs = ["x86_64", "aarch64"]
+archs = ["x86_64"]
 
 [tool.cibuildwheel.windows]
-archs = ["AMD64", "x86"]
+archs = ["AMD64"]

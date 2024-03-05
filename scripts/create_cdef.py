@@ -1,10 +1,17 @@
 import re
 import subprocess
+import platform
 from pathlib import Path
 
-lib_dir = (Path(__file__).parent.parent / "./binaryen/libbinaryen/")
-header_path = (lib_dir /"./binaryen-c.h")
-output_path =(lib_dir / "./binaryen-c.c")
+host_platform = platform.system().lower()
+if host_platform == "Darwin":
+    host_platform = "macos"
+
+host_machine = platform.machine().lower()
+
+include_dir = (Path(__file__).parent.parent / f"./binaryen/libbinaryen/{host_machine}-{host_platform}/include")
+header_path = (include_dir /"./binaryen-c.h")
+output_path =(include_dir / "./binaryen-c.c")
 
 # Note: manually replace unions with the largest type (uint8_t v128[16];)
 
@@ -18,7 +25,7 @@ if __name__ == "__main__":
 
     # Run the C pre-processor on the Binaryen header file
     pre_processor = subprocess.run(
-        ["cpp", "-nostdinc", "-E", "-P", f"-I{lib_dir}"],
+        ["cpp", "-nostdinc", "-E", "-P", f"-I{include_dir}"],
         input=header.encode("utf-8"),
         check=True,
         stdout=subprocess.PIPE,
@@ -41,5 +48,5 @@ if __name__ == "__main__":
         r"^__attribute__\(\(deprecated\)\).*$", "", header, flags=re.MULTILINE
     )
 
-    with open(output_path, "x", encoding="utf-8") as output:
+    with open(output_path, "w", encoding="utf-8") as output:
         output.write(header)

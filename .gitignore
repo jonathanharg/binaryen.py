@@ -1,7 +1,7 @@
 .vscode
 .DS_Store
 
-binaryen/TODO.h
+wheelhouse
 binaryen/libbinaryen/*
 binaryen/_binaryen.*
 

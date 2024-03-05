@@ -9,6 +9,9 @@ if host_platform == "darwin":
 
 host_machine = platform.machine().lower()
 
+if host_platform == "windows" and host_machine == "amd64":
+    host_machine = "x86_64"
+
 include_dir = (Path(__file__).parent.parent / f"./binaryen/libbinaryen/{host_machine}-{host_platform}/include")
 header_path = (include_dir /"./binaryen-c.h")
 output_path =(include_dir / "./binaryen-c.c")
@@ -32,6 +35,7 @@ if __name__ == "__main__":
     )
 
     header = pre_processor.stdout.decode(encoding="utf-8")
+    header = "\n".join([line.strip() for line in header.splitlines()])
 
     # Clean up build artifacts & comments
     header = re.sub(r"//.*\n", "", header)

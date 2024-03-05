@@ -9,6 +9,9 @@ if host_platform == "darwin":
 
 host_machine = platform.machine().lower()
 
+if host_platform == "windows" and host_machine == "amd64":
+    host_machine = "x86_64"
+
 root_path_override = os.environ.get("BINARYEN_PY_ROOT")
 
 print("==== BUILD ====")

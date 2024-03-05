@@ -57,6 +57,7 @@ archs = ["x86_64"]
 
 [tool.cibuildwheel.windows]
 archs = ["AMD64"]
+# before-build = ["bash scripts/build_libbinaryen.sh"]
 
 [[tool.cibuildwheel.overrides]]
 select = "*-musllinux*"

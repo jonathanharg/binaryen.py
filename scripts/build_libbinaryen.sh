@@ -1,5 +1,7 @@
 #!/bin/bash
 
+arch=$(uname -m)
+
 case "$(uname -sr)" in
 
 Darwin*)
@@ -12,6 +14,10 @@ Linux*)
 
 CYGWIN* | MINGW* | MINGW32* | MSYS*)
     platform='windows'
+    if [[ "$arch" == "amd-64"]]
+    then
+        arch="x86_64"
+    fi
     ;;
 
 *)
@@ -33,7 +39,6 @@ then
     wildcards=""
 fi
 
-arch=$(uname -m)
 lib_path="./binaryen/libbinaryen/$arch-$platform/"
 mkdir -p $lib_path
 

@@ -44,21 +44,20 @@ packages = ["binaryen", "binaryen.type"]
 build = "cp312-*"
 skip = "pp*"
 environment = { BINARYEN_VERSION = "117" }
+before-all = ["bash ./scripts/build_libbinaryen.sh"]
 
 [tool.cibuildwheel.macos]
 archs = ["x86_64", "arm64"]
-before-all = ["bash ./scripts/build_libbinaryen.sh"]
-
-[tool.cibuildwheel.linux]
-# archs = ["x86_64", "aarch64"]
-before-all = ["yum install wget -y"]
-before-build = ["cd {package}", "bash ./scripts/build_libbinaryen.sh"]
-archs = ["x86_64"]
 
 [tool.cibuildwheel.windows]
 archs = ["AMD64"]
-# before-build = ["bash scripts/build_libbinaryen.sh"]
+
+[tool.cibuildwheel.linux]
+# archs = ["x86_64", "aarch64"]
+archs = ["x86_64"]
+before-all = ["yum install wget -y", "bash ./scripts/build_libbinaryen.sh"]
+
 
 [[tool.cibuildwheel.overrides]]
 select = "*-musllinux*"
-before-all = "apk add wget"
+before-all = ["apk add wget", "bash ./scripts/build_libbinaryen.sh"]

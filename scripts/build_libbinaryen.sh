@@ -14,8 +14,7 @@ Linux*)
 
 CYGWIN* | MINGW* | MINGW32* | MSYS*)
     platform='windows'
-    if [[ "$arch" == "amd-64"]]
-    then
+    if [[ "$arch" == "amd-64" ]]; then
         arch="x86_64"
     fi
     ;;
@@ -26,28 +25,25 @@ CYGWIN* | MINGW* | MINGW32* | MSYS*)
     ;;
 esac
 
-if [ -z ${BINARYEN_VERSION+x} ]
-then
+if [ -z ${BINARYEN_VERSION+x} ]; then
     echo "\$BINARYVEN_VERSION not set"
     exit 1
 fi
 
 wildcards="--wildcards"
 
-if [[ "$platform" == "macos" ]]
-then
+if [[ "$platform" == "macos" ]]; then
     wildcards=""
 fi
 
 lib_path="./binaryen/libbinaryen/$arch-$platform/"
 mkdir -p $lib_path
 
-if [[ "$platform" == "macos" ]]
-then
+if [[ "$platform" == "macos" ]]; then
     mkdir -p "./binaryen/libbinaryen/src/"
     file="version_$BINARYEN_VERSION.tar.gz"
     url="https://github.com/WebAssembly/binaryen/archive/refs/tags/$file"
-    wget -nc --no-check-certificate --content-disposition $url -P "./binaryen/libbinaryen"
+    wget -q -nc --no-check-certificate --content-disposition $url -P "./binaryen/libbinaryen"
     tar -xzvf "./binaryen/libbinaryen/binaryen-$file" -C "./binaryen/libbinaryen/src" --strip-components=1
     cmake -S "./binaryen/libbinaryen/src" -B "./binaryen/libbinaryen/build/" -G Ninja \
         -DCMAKE_INSTALL_PREFIX="$lib_path" -DCMAKE_OSX_ARCHITECTURES=$arch \
@@ -57,7 +53,7 @@ then
 else
     file="binaryen-version_$BINARYEN_VERSION-$arch-$platform.tar.gz"
     url="https://github.com/WebAssembly/binaryen/releases/download/version_$BINARYEN_VERSION/$file"
-    wget -nc --no-check-certificate --content-disposition $url -P $lib_path
+    wget -q -nc --no-check-certificate --content-disposition $url -P $lib_path
     tar -xzvf $lib_path$file -C $lib_path --strip-components=1 $wildcards \
         "binaryen-version_$BINARYEN_VERSION/include/binaryen-c.h" \
         "binaryen-version_$BINARYEN_VERSION/include/wasm-delegations.def" \

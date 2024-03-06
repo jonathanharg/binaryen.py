@@ -1,7 +1,8 @@
-import cffi
 import os
 import platform
 from pathlib import Path
+
+import cffi
 
 host_platform = platform.system().lower()
 if host_platform == "darwin":

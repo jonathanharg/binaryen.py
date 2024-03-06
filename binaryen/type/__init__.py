@@ -5,7 +5,7 @@ from typing import cast as __cast
 from .. import internals as __internals
 from .._binaryen import ffi as __ffi
 from .._binaryen import lib as __lib
-from . import array_type, heap_type, struct_type, signature_type
+from . import array_type, heap_type, signature_type, struct_type
 
 # These "types" are actually integers representing the type
 # e.g. none = 0, i32 = 2 etc.

@@ -1,6 +1,6 @@
+import platform
 import re
 import subprocess
-import platform
 from pathlib import Path
 
 host_platform = platform.system().lower()
@@ -12,9 +12,12 @@ host_machine = platform.machine().lower()
 if host_platform == "windows" and host_machine == "amd64":
     host_machine = "x86_64"
 
-include_dir = (Path(__file__).parent.parent / f"./binaryen/libbinaryen/{host_machine}-{host_platform}/include")
-header_path = (include_dir /"./binaryen-c.h")
-output_path =(include_dir / "./binaryen-c.c")
+include_dir = (
+    Path(__file__).parent.parent
+    / f"./binaryen/libbinaryen/{host_machine}-{host_platform}/include"
+)
+header_path = include_dir / "./binaryen-c.h"
+output_path = include_dir / "./binaryen-c.c"
 
 # Note: manually replace unions with the largest type (uint8_t v128[16];)
 

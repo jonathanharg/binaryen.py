@@ -12,6 +12,12 @@ pip install binaryen.py
 
 Windows, Mac (Intel & ARM) and Linux (manylinux, musllinux) are supported.
 
+### Build from source
+
+1. (If upgrading binaryen version) Update `BINARYEN_VERSION` in `pyproject.toml` and `.github/workflows/build.yaml`
+2. Run `bash scripts/build_libbinaryen.sh`
+3. Run `python -m pip install -e .`, `cibuildwheel`, `python -m pip wheel .`,  or whichever supported build command you would prefer
+
 ## How To Use
 
 ```py

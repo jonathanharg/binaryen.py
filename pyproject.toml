@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "binaryen.py"
-version = "117.0.0-alpha.1"
+version = "117.0.0-alpha.2"
 description = "A Python wrapper for Binaryen"
 authors = [{ name = "Jonathan Hargreaves", email = "jhargreaves189@gmail.com" }]
 readme = "README.md"
@@ -35,7 +35,7 @@ Changelog = "https://github.com/jonathanharg/binaryen.py/blob/main/CHANGELOG.md"
 "Original Source Code" = "https://github.com/WebAssembly/binaryen"
 
 [project.optional-dependencies]
-dev = ["black", "isort"]
+dev = ["black", "isort", "cibuildwheel"]
 
 [tool.setuptools]
 packages = ["binaryen", "binaryen.type"]
@@ -55,8 +55,8 @@ archs = ["x86_64", "arm64"]
 archs = ["AMD64"]
 
 [tool.cibuildwheel.linux]
-# archs = ["x86_64", "aarch64"]
-archs = ["x86_64"]
+archs = ["x86_64", "aarch64"]
+# archs = ["x86_64"]
 before-all = ["yum install wget -y", "bash ./scripts/build_libbinaryen.sh"]
 
 

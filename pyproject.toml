@@ -55,8 +55,7 @@ archs = ["x86_64", "arm64"]
 archs = ["AMD64"]
 
 [tool.cibuildwheel.linux]
-archs = ["x86_64", "aarch64"]
-# archs = ["x86_64"]
+archs = ["x86_64"]
 before-all = ["yum install wget -y", "bash ./scripts/build_libbinaryen.sh"]
 
 

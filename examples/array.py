@@ -1,7 +1,6 @@
 import binaryen
 from binaryen.type import Int32, NotPacked
 
-
 mod = binaryen.Module()
 mod.set_feature(binaryen.Feature.GC | binaryen.Feature.ReferenceTypes)
 
@@ -21,11 +20,7 @@ mod.add_function(
     [Int32Array],
     mod.block(
         None,
-        [
-            set_array,
-            array,
-            mod.Return(mod.array_len(array))
-        ],
+        [set_array, array, mod.Return(mod.array_len(array))],
         Int32,
     ),
 )

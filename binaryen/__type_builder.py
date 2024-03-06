@@ -1,9 +1,9 @@
-from ._binaryen import lib, ffi
+from ._binaryen import ffi, lib
 from .internals import (
     BinaryenExpressionId,
-    BinaryenType,
-    BinaryenPackedType,
     BinaryenHeapType,
+    BinaryenPackedType,
+    BinaryenType,
 )
 
 type_builder_errors = {

@@ -1,5 +1,5 @@
 import binaryen
-from binaryen.type import Int32, TypeNone
+from binaryen.type import Int32
 
 
 # Equivalent python function
@@ -10,64 +10,61 @@ def fib(n):
         return fib(n - 1) + fib(n - 2)
 
 
-myModule = binaryen.Module()
-myModule.add_function(
+mod = binaryen.Module()
+
+n = mod.local_get(0, Int32)
+
+condition = mod.binary(
+    binaryen.operations.LeSInt32(),
+    n,
+    mod.i32(1),
+)
+
+n_minus_one = mod.binary(
+    binaryen.operations.SubInt32(),
+    n,
+    mod.i32(1),
+)
+
+n_minus_two = mod.binary(
+    binaryen.operations.SubInt32(),
+    n,
+    mod.i32(2),
+)
+
+mod.add_function(
     b"fib",
     Int32,
     Int32,
     [],
-    myModule.block(
-        None,
-        [
-            myModule.If(
-                myModule.binary(
-                    binaryen.operations.LeSInt32(),
-                    myModule.local_get(0, Int32),
-                    myModule.i32(1),
+    mod.If(
+        condition,
+        mod.Return(n),
+        mod.Return(
+            mod.binary(
+                binaryen.operations.AddInt32(),
+                mod.call(
+                    b"fib",
+                    [n_minus_one],
+                    Int32,
                 ),
-                myModule.Return(myModule.local_get(0, Int32)),
-                myModule.Return(
-                    myModule.binary(
-                        binaryen.operations.AddInt32(),
-                        myModule.call(
-                            b"fib",
-                            [
-                                myModule.binary(
-                                    binaryen.operations.SubInt32(),
-                                    myModule.local_get(0, Int32),
-                                    myModule.i32(1),
-                                )
-                            ],
-                            Int32,
-                        ),
-                        myModule.call(
-                            b"fib",
-                            [
-                                myModule.binary(
-                                    binaryen.operations.SubInt32(),
-                                    myModule.local_get(0, Int32),
-                                    myModule.const(binaryen.literal.int32(2)),
-                                )
-                            ],
-                            Int32,
-                        ),
-                    )
+                mod.call(
+                    b"fib",
+                    [n_minus_two],
+                    Int32,
                 ),
             )
-        ],
-        TypeNone,
+        ),
     ),
 )
 
-if not myModule.validate():
-    raise Exception("Invalid module!")
+if not mod.validate():
+    raise RuntimeError("Invalid module!")
 
-myModule.add_function_export(b"fib", b"fib")
+mod.add_function_export(b"fib", b"fib")
 
-myModule.optimize()
+mod.optimize()
 
-myModule.print()
+mod.print()
 
-# Can either print with `myModule.print()` or write to file with `myModule.write_binary(__file__)`
-
-# Run the written binary with `wasmtime fib.wasm --invoke fib 23`
+# Run the written binary with `wasmtime --invoke fib fib.wasm 23`

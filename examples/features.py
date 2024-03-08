@@ -1,7 +1,9 @@
 from binaryen import Feature, Module
 
-myModule = Module()
-print(myModule.get_features())
-myModule.set_feature(Feature.GC | Feature.ReferenceTypes)
-print(myModule.get_features())
-print(list(myModule.get_features()))
+mod = Module()
+print(mod.get_features())
+
+mod.set_feature(Feature.GC | Feature.ReferenceTypes)
+
+print(mod.get_features())
+print(list(mod.get_features()))

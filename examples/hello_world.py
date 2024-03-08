@@ -45,12 +45,12 @@ func = mod.add_function(b"main", None, None, [], block)
 
 
 mod.add_function_export(b"main", b"main")
-# mod.set_start(func)
+mod.set_start(func)
 
 mod.auto_drop()
 mod.optimize()
 mod.validate()
 
 mod.print()
-mod.write_text("hello_world.wat")
 mod.write_binary("hello_world.wasm")
+# wasmtime hello_world.wasm

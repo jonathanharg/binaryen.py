@@ -7,38 +7,36 @@ def addTen(x):
     return x + 10
 
 
-myModule = binaryen.Module()
-myModule.add_function(
+mod = binaryen.Module()
+mod.add_function(
     b"addTen",
     Int32,
     Int32,
     [Int32],
-    myModule.block(
+    mod.block(
         None,
         [
-            myModule.local_set(
+            mod.local_set(
                 1,
-                myModule.binary(
+                mod.binary(
                     binaryen.operations.AddInt32(),
-                    myModule.local_get(0, Int32),
-                    myModule.i32(10),
+                    mod.local_get(0, Int32),
+                    mod.i32(10),
                 ),
             ),
-            myModule.Return(myModule.local_get(1, Int32)),
+            mod.Return(mod.local_get(1, Int32)),
         ],
         TypeNone,
     ),
 )
 
-if not myModule.validate():
-    raise Exception("Invalid module!")
+if not mod.validate():
+    raise RuntimeError("Invalid module!")
 
-myModule.add_function_export(b"addTen", b"addTen")
+mod.add_function_export(b"addTen", b"addTen")
 
-myModule.optimize()
+mod.optimize()
 
-myModule.print()
+mod.print()
 
-# Can either print with `myModule.print()` or write to file with `myModule.write_binary(__file__)`
-
-# Run the written binary with `wasmtime addTen.wasm --invoke addTen 12`
+# Run the written binary with `wasmtime --invoke addTen addTen.wasm 12`

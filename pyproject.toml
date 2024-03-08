@@ -48,9 +48,6 @@ environment = { BINARYEN_VERSION = "117" }
 # WARNING: If you update this also update it in the Github Action!!
 before-all = ["bash ./scripts/build_libbinaryen.sh"]
 
-[tool.cibuildwheel.macos]
-archs = ["x86_64", "arm64"]
-
 [tool.cibuildwheel.windows]
 archs = ["AMD64"]
 

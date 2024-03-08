@@ -37,6 +37,7 @@ jobs:
         run: 'choco install wget -y'
 
       - name: Restore cached libbinaryen
+        if: runner.os != 'Linux'
         id: cache-libbinaryen-restore
         uses: actions/cache/restore@v4
         with:
@@ -49,7 +50,7 @@ jobs:
       - name: Cache libbinaryen
         id: cache-libbinaryen-save
         uses: actions/cache/save@v4
-        if: steps.cache-libbinaryen-restore.outputs.cache-hit != 'true'
+        if: ${{steps.cache-libbinaryen-restore.outputs.cache-hit != 'true' && runner.os != 'Linux'}}
         with:
           path: ./binaryen/libbinaryen
           key: ${{steps.cache-libbinaryen-restore.outputs.cache-primary-key}}
@@ -77,8 +78,11 @@ jobs:
           path: dist/*.tar.gz
 
   create_release:
+    name: Create Release
     needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
+    permissions: 
+      contents: write
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -87,7 +91,7 @@ jobs:
           merge-multiple: true
       - name: Create Release
         uses: softprops/action-gh-release@v1
-        # if: startsWith(github.ref, 'refs/tags/')
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           draft: true
           files: dist/*

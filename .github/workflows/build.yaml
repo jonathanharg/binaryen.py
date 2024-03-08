@@ -49,6 +49,7 @@ jobs:
       - name: Cache libbinaryen
         id: cache-libbinaryen-save
         uses: actions/cache/save@v4
+        if: steps.cache-libbinaryen-restore.outputs.cache-hit != 'true'
         with:
           path: ./binaryen/libbinaryen
           key: ${{steps.cache-libbinaryen-restore.outputs.cache-primary-key}}
@@ -74,3 +75,19 @@ jobs:
         with:
           name: binaryen-py-sdist
           path: dist/*.tar.gz
+
+  create_release:
+    needs: [build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: binaryen-py-*
+          path: dist
+          merge-multiple: true
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        # if: startsWith(github.ref, 'refs/tags/')
+        with:
+          draft: true
+          files: dist/*

@@ -55,7 +55,6 @@ archs = ["AMD64"]
 archs = ["x86_64"]
 before-all = ["yum install wget -y", "bash ./scripts/build_libbinaryen.sh"]
 
-
 [[tool.cibuildwheel.overrides]]
 select = "*-musllinux*"
 before-all = ["apk add wget", "bash ./scripts/build_libbinaryen.sh"]

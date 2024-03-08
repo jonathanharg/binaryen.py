@@ -64,16 +64,8 @@ if [[ "$platform" == "macos" ]]; then
     tar -xzf "$root_path/binaryen-$file" -C "$root_path/src" --strip-components=1
     echo "Extracted source code"
 
-    echo "Building for Apple Silicon"
     cmake -S "$root_path/src" -B "$root_path/build/" -G Ninja \
-        -DCMAKE_INSTALL_PREFIX=""$root_path/arm64-macos"" -DCMAKE_OSX_ARCHITECTURES="arm64" \
-        -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DBUILD_TOOLS=OFF \
-        -DBUILD_STATIC_LIB=ON
-    cmake --build "$root_path/build/" -v --config Release --target install
-
-    echo "Build for Intel"
-    cmake -S "$root_path/src" -B "$root_path/build/" -G Ninja \
-        -DCMAKE_INSTALL_PREFIX=""$root_path/x86_64-macos"" -DCMAKE_OSX_ARCHITECTURES="x86_64" \
+        -DCMAKE_INSTALL_PREFIX="$lib_path" -DCMAKE_OSX_ARCHITECTURES="$arch" \
         -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DBUILD_TOOLS=OFF \
         -DBUILD_STATIC_LIB=ON
     cmake --build "$root_path/build/" -v --config Release --target install

@@ -43,6 +43,14 @@ jobs:
           path: ./binaryen/libbinaryen
           key: ${{ matrix.os }}-${{ runner.os }}-${{ runner.arch }}-v${{env.BINARYEN_VERSION}}-libbinaryen
 
+      - name: Set macOS architectures
+        run: |
+          if [ ${{ matrix.os }} == 'macos-13' ]; then
+            echo "CIBW_ARCHS_MACOS=x86_64" >> $GITHUB_ENV
+          elif [ ${{ matrix.os }} == 'macos-14' ]; then
+            echo "CIBW_ARCHS_MACOS=arm64" >> $GITHUB_ENV
+          fi
+
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.16.5
 

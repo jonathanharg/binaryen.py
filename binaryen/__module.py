@@ -60,10 +60,10 @@ class Module:
     def i64(self, value: int):
         return self.const(literal.int64(value))
 
-    def f32(self, value: int):
+    def f32(self, value: float):
         return self.const(literal.float32(value))
 
-    def f64(self, value: int):
+    def f64(self, value: float):
         return self.const(literal.float64(value))
 
     def block(

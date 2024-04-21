@@ -10,13 +10,13 @@ class FunctionRef:
         return lib.BinaryenFunctionGetName(self.ref)
 
     def get_num_vars(self) -> int:
-        return lib.BinaryenGetNumVars(self.ref)
+        return lib.BinaryenFunctionGetNumVars(self.ref)
 
     def get_var(self, index: int) -> BinaryenType:
         return lib.BinaryenFunctionGetVar(self.ref, index)
 
-    # def add_var(self, type: Type) -> int:
-    #     return lib.BinaryenFunctionAddVar(self.ref, type)
+    def add_var(self, type: BinaryenType) -> int:
+        return lib.BinaryenFunctionAddVar(self.ref, type)
 
     def get_num_locals(self) -> int:
         return lib.BinaryenFunctionGetNumLocals(self.ref)

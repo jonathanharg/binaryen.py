@@ -21,17 +21,19 @@ Windows, Mac (Intel & ARM) and Linux (manylinux, musllinux) are supported.
 ## How To Use
 
 ```py
+import binaryen
+from binaryen.type import Int32, TypeNone
+
 
 # Equivalent python function
 def add(x, y):
     return x + y
 
-func_inputs = binaryen.type.create([Int32, Int32])
 
 mod = binaryen.Module()
 mod.add_function(
     b"add",
-    func_inputs,
+    binaryen.type.create([Int32, Int32]),
     Int32,
     [Int32],
     mod.block(
@@ -50,6 +52,9 @@ mod.add_function(
         TypeNone,
     ),
 )
+
+if not mod.validate():
+    raise RuntimeError("Invalid module!")
 
 mod.add_function_export(b"add", b"add")
 

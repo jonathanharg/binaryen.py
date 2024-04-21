@@ -6,14 +6,9 @@ from . import literal
 from .__expression import Block, Expression
 from .__feature import Feature
 from .__functionref import FunctionRef
+from .__global import Global
 from ._binaryen import ffi, lib
-from .internals import (
-    BinaryenGlobalRef,
-    BinaryenHeapType,
-    BinaryenLiteral,
-    BinaryenOp,
-    BinaryenType,
-)
+from .internals import BinaryenHeapType, BinaryenLiteral, BinaryenOp, BinaryenType
 from .type import TypeNone
 
 type BinaryenExportRef = Any
@@ -60,10 +55,10 @@ class Module:
     def i64(self, value: int):
         return self.const(literal.int64(value))
 
-    def f32(self, value: int):
+    def f32(self, value: float):
         return self.const(literal.float32(value))
 
-    def f64(self, value: int):
+    def f64(self, value: float):
         return self.const(literal.float64(value))
 
     def block(
@@ -385,11 +380,25 @@ class Module:
 
     def add_global(
         self, name: bytes, global_type: BinaryenType, mutable: bool, init: Expression
-    ) -> BinaryenGlobalRef:
+    ):
         ref = lib.BinaryenAddGlobal(self.ref, name, global_type, mutable, init.ref)
-        return ref
+        return Global(ref)
 
-    # TODO: GetGlobal, RemoveGlobal, GetNumGlobals, GetGlobalByIndex
+    def get_global(self, name: bytes):
+        ref = lib.BinaryenGetGlobal(self.ref, name)
+        if ref == ffi.NULL:
+            return None
+        return Global(ref)
+
+    def remove_global(self, name: bytes):
+        lib.BinaryenRemoveGlobal(self.ref, name)
+
+    def get_num_globals(self):
+        return int(lib.BinaryenGetNumGlobals(self.ref))
+
+    def get_global_by_index(self, index: int):
+        ref = lib.BinaryenGetGlobalByIndex(self.ref, index)
+        return Global(ref)
 
     # TODO: AddTag, GetTag, RemoveTag
 

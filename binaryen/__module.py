@@ -4,16 +4,11 @@ from typing import Any
 
 from . import literal
 from .__expression import Block, Expression
-from .__global import Global
 from .__feature import Feature
 from .__functionref import FunctionRef
+from .__global import Global
 from ._binaryen import ffi, lib
-from .internals import (
-    BinaryenHeapType,
-    BinaryenLiteral,
-    BinaryenOp,
-    BinaryenType,
-)
+from .internals import BinaryenHeapType, BinaryenLiteral, BinaryenOp, BinaryenType
 from .type import TypeNone
 
 type BinaryenExportRef = Any

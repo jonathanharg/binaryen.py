@@ -1,5 +1,5 @@
-from ._binaryen import lib
 from .__expression import Expression
+from ._binaryen import lib
 
 
 class Global:

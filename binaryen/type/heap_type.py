@@ -2,7 +2,7 @@ from .. import internals as __internals
 from .._binaryen import lib as __lib
 
 
-def is_basic(heap_type: __internals.BinaryenHeapType):
+def is_basic(heap_type: __internals.BinaryenHeapType | __internals.BinaryenType):
     return bool(__lib.BinaryenHeapTypeIsBasic(heap_type))
 
 
